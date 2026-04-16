@@ -4,7 +4,7 @@ import { createLogger, format, transports } from 'winston';
 import { parseArgs } from './cli/parse-args.mts';
 import { loadEnv } from './config/env.mts';
 import { createContainer } from './container/di.mts';
-import { parsePrd } from './input/prd-parser.mts';
+import { parsePrd, parseStructuredContent } from './input/prd-parser.mts';
 import { runPipeline } from './orchestrator/pipeline.mts';
 import type { PlaywrightCallbacks } from './orchestrator/pipeline.mts';
 import type { PipelineConfig } from './types/index.mts';
@@ -70,9 +70,9 @@ async function main(): Promise<void> {
   // ── Run pipeline ──────────────────────────────────────────────
   const runId = ulid();
 
-  let prdContent: string;
-  let projectTitle: string;
-  let projectScope: string;
+  let prdContent = ``;
+  let projectTitle = ``;
+  let projectScope = ``;
   let resumeRunId: string | undefined;
 
   if (options.command.kind === `resume`) {
@@ -87,15 +87,56 @@ async function main(): Promise<void> {
     projectScope = `Resume`;
     logger.info(`Resuming run: ${resumeRunId} as new run: ${runId}`);
   } else {
-    const prdResult = await parsePrd(options.command.prdPath, logger);
-    if (!prdResult.ok) {
-      logger.error(`Failed to parse PRD: ${prdResult.error.message}`);
-      process.exit(1);
+    // Determine if we have raw text that needs PRD generation
+    let rawText: string | undefined;
+
+    if (options.command.kind === `run-prompt`) {
+      rawText = options.command.promptText;
+    } else {
+      const prdResult = await parsePrd(options.command.prdPath, logger);
+      if (!prdResult.ok) {
+        logger.error(`Failed to parse PRD: ${prdResult.error.message}`);
+        process.exit(1);
+      }
+
+      if (prdResult.value.kind === `raw`) {
+        rawText = prdResult.value.rawText;
+        logger.info(`PRD file contains raw text (no markdown headings) — generating structured PRD...`);
+      } else {
+        prdContent = prdResult.value.content;
+        projectTitle = prdResult.value.title;
+        projectScope = prdResult.value.sections.slice(0, 5).join(`, `);
+        logger.info(`Loaded PRD: ${projectTitle} (${prdResult.value.sections.length} sections)`);
+      }
     }
-    prdContent = prdResult.value.content;
-    projectTitle = prdResult.value.title;
-    projectScope = prdResult.value.sections.slice(0, 5).join(`, `);
-    logger.info(`Loaded PRD: ${projectTitle} (${prdResult.value.sections.length} sections)`);
+
+    // Generate a structured PRD from raw text via LLM
+    if (rawText !== undefined) {
+      logger.info(`\n========== Phase 0a: PRD Generation ==========`);
+      const genResult = await container.prdGenerationAgent.run({ rawText });
+      if (!genResult.ok) {
+        logger.error(`Failed to generate PRD from raw text: ${genResult.error.message}`);
+        process.exit(1);
+      }
+
+      const generated = genResult.value.result;
+
+      container.costTracker.record(
+        genResult.value.model,
+        genResult.value.tokenUsage.inputTokens,
+        genResult.value.tokenUsage.outputTokens,
+        `prd-generation`,
+      );
+
+      const savedPath = await workspace.saveGeneratedPrd(generated.generatedMarkdown);
+      logger.info(`Generated PRD saved to: ${savedPath}`);
+
+      const parsed = parseStructuredContent(generated.generatedMarkdown);
+      prdContent = parsed.content;
+      projectTitle = parsed.title;
+      projectScope = parsed.sections.slice(0, 5).join(`, `);
+      logger.info(`Generated PRD: ${projectTitle} (${parsed.sections.length} sections)`);
+    }
   }
 
   logger.info(`Starting Angular generation pipeline`, {
