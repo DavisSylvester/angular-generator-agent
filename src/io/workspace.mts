@@ -148,6 +148,16 @@ export class Workspace {
     await writeFile(usagePath, JSON.stringify(usage, null, 2));
   }
 
+  // ── Generated PRD ──────────────────────────────────────────────
+
+  async saveGeneratedPrd(markdown: string): Promise<string> {
+    const prdPath = join(this.baseDir, `generated-prd.md`);
+    await mkdir(this.baseDir, { recursive: true });
+    await writeFile(prdPath, markdown);
+    this.logger.info(`Generated PRD saved`, { path: prdPath });
+    return prdPath;
+  }
+
   // ── Design Cache ───────────────────────────────────────────────
 
   /**

@@ -1,5 +1,6 @@
 export type CliCommand =
   | { kind: `run`; prdPath: string }
+  | { kind: `run-prompt`; promptText: string }
   | { kind: `resume`; runId: string }
   | { kind: `list-runs` }
   | { kind: `status`; runId: string }
@@ -24,13 +25,15 @@ spa-generator-agent — Generate SPA applications from PRDs
 
 USAGE
   bun run src/index.mts --prd <file>              Start new SPA generation
+  bun run src/index.mts --prompt "<text>"          Generate PRD from raw text, then run pipeline
   bun run src/index.mts --prd <file> --framework react   Use React instead of Angular
   bun run src/index.mts --resume <run-id>          Resume an interrupted run
   bun run src/index.mts --list-runs                List all previous runs
   bun run src/index.mts --status <run-id>          Show task status for a run
 
 OPTIONS
-  --prd <file>          Path to the PRD markdown file
+  --prd <file>          Path to the PRD markdown file (auto-detects raw text)
+  --prompt "<text>"     Raw text description — auto-generates a structured PRD
   --api-spec <file>     Path to the API spec from api-generator-agent (OpenAPI JSON/YAML)
   --framework <fw>      SPA framework: angular, react, vue, svelte (default: angular)
   --resume <run-id>     Resume a previous run by ID
@@ -57,6 +60,7 @@ ENVIRONMENT
 EXAMPLES
   bun run src/index.mts --prd ./my-portal-prd.md --api-spec ./api-spec.json
   bun run src/index.mts --prd ./prd.md --iterations 10
+  bun run src/index.mts --prompt "Build a restaurant reservation app with table management"
   bun run src/index.mts --resume 01JARX9KP3M2VBCDE4567FG8H
 `.trim();
 
@@ -92,6 +96,16 @@ export function parseArgs(argv: readonly string[]): CliOptions {
           process.exit(1);
         }
         command = { kind: `run`, prdPath };
+        break;
+      }
+
+      case `--prompt`: {
+        const promptText = args[++i];
+        if (!promptText) {
+          console.error(`Error: --prompt requires a text description`);
+          process.exit(1);
+        }
+        command = { kind: `run-prompt`, promptText };
         break;
       }
 

@@ -14,6 +14,7 @@ import { CodegenAgent } from '../agents/codegen-agent.mts';
 import { ValidationAgent } from '../agents/validation-agent.mts';
 import { DesignSelectionAgent } from '../agents/design-selection-agent.mts';
 import { ComponentLibraryAgent } from '../agents/component-library-agent.mts';
+import { PrdGenerationAgent } from '../agents/prd-generation-agent.mts';
 import { Workspace } from '../io/workspace.mts';
 import { ParallelExecutor } from '../graph/parallel-executor.mts';
 import { ConsoleChannel } from '../notifications/console-channel.mts';
@@ -29,6 +30,7 @@ import type { LlmProvider, AgentRole } from '../config/models.mts';
 export interface Container {
   readonly logger: Logger;
   readonly primaryFactory: ILlmFactory;
+  readonly prdGenerationAgent: PrdGenerationAgent;
   readonly planningAgent: PlanningAgent;
   readonly codegenAgent: CodegenAgent;
   readonly validationAgent: ValidationAgent;
@@ -142,6 +144,7 @@ export function createContainer(env: EnvConfig, overrides?: Partial<PipelineConf
   };
 
   // ── Agents ─────────────────────────────────────────────────────
+  const prdGenerationAgent = new PrdGenerationAgent(logger, buildChain(`planning`), env.LLM_TIMEOUT_MS);
   const planningAgent = new PlanningAgent(logger, buildChain(`planning`), env.LLM_TIMEOUT_MS);
   const codegenAgent = new CodegenAgent(logger, buildChain(`codegen`), env.LLM_TIMEOUT_MS);
   const validationAgent = new ValidationAgent(logger, buildChain(`validation`), env.LLM_TIMEOUT_MS);
@@ -191,6 +194,7 @@ export function createContainer(env: EnvConfig, overrides?: Partial<PipelineConf
   return {
     logger,
     primaryFactory,
+    prdGenerationAgent,
     planningAgent,
     codegenAgent,
     validationAgent,
