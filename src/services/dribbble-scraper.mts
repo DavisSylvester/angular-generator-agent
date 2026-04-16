@@ -1,6 +1,7 @@
 import type { Logger } from 'winston';
 import type { Result, DribbbleDesign } from '../types/index.mts';
 import { ok, err } from '../types/index.mts';
+import { retryWithBackoff } from '../utils/retry-with-backoff.mts';
 
 /**
  * Scrapes Dribbble for design inspiration using Playwright MCP tools.
@@ -62,19 +63,16 @@ export class DribbbleScraper {
       if (allDesigns.length >= this.minResults) break;
 
       try {
-        const encoded = encodeURIComponent(query);
-        const searchUrl = `https://dribbble.com/search/${encoded}`;
-
-        this.logger.info(`Searching Dribbble`, { query, url: searchUrl });
-        await navigate(searchUrl);
-
-        // Take screenshot for debugging / LLM visual context
-        const screenshotData = await screenshot();
-        this.logger.debug(`Dribbble screenshot captured`, { query, bytes: screenshotData.length });
-
-        // Get accessibility snapshot for structured scraping
-        const snap = await snapshot();
-        const parsed = this.parseSnapshot(snap, query);
+        const parsed = await retryWithBackoff(
+          () => this.scrapeQuery(query, navigate, snapshot, screenshot),
+          {
+            maxAttempts: 3,
+            baseDelayMs: 3000,
+            maxDelayMs: 15000,
+            label: `Dribbble scrape "${query}"`,
+          },
+          this.logger,
+        );
 
         for (const design of parsed) {
           if (!seenUrls.has(design.url)) {
@@ -87,7 +85,7 @@ export class DribbbleScraper {
           total: allDesigns.length,
         });
       } catch (error) {
-        this.logger.warn(`Dribbble search failed for query "${query}"`, {
+        this.logger.warn(`Dribbble scrape failed for query "${query}" after retries`, {
           error: error instanceof Error ? error.message : String(error),
         });
       }
@@ -103,6 +101,32 @@ export class DribbbleScraper {
     }
 
     return ok(allDesigns);
+  }
+
+  /**
+   * Execute a single Playwright scrape for one query. Extracted so
+   * `retryWithBackoff` can re-attempt the full navigate→screenshot→parse
+   * sequence on transient failures.
+   */
+  private async scrapeQuery(
+    query: string,
+    navigate: (url: string) => Promise<void>,
+    snapshot: () => Promise<string>,
+    screenshot: () => Promise<string>,
+  ): Promise<DribbbleDesign[]> {
+    const encoded = encodeURIComponent(query);
+    const searchUrl = `https://dribbble.com/search/${encoded}`;
+
+    this.logger.info(`Searching Dribbble`, { query, url: searchUrl });
+    await navigate(searchUrl);
+
+    // Take screenshot for debugging / LLM visual context
+    const screenshotData = await screenshot();
+    this.logger.debug(`Dribbble screenshot captured`, { query, bytes: screenshotData.length });
+
+    // Get accessibility snapshot for structured scraping
+    const snap = await snapshot();
+    return this.parseSnapshot(snap, query);
   }
 
   /**

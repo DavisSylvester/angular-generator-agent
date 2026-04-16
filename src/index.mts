@@ -166,6 +166,7 @@ async function main(): Promise<void> {
       executor: container.executor,
       notifier: container.notifier,
       dribbbleScraper: container.dribbbleScraper,
+      dribbbleApiClient: container.dribbbleApiClient,
       stitchService: container.stitchService,
     },
     pw,

@@ -12,6 +12,7 @@ import type { Workspace } from '../io/workspace.mts';
 import type { ParallelExecutor } from '../graph/parallel-executor.mts';
 import type { INotifier } from '../interfaces/i-notifier.mts';
 import type { DribbbleScraper } from '../services/dribbble-scraper.mts';
+import type { DribbbleApiClient } from '../services/dribbble-api-client.mts';
 import type { StitchService } from '../services/stitch-service.mts';
 import type {
   PipelineConfig,
@@ -53,6 +54,7 @@ export interface PipelineDeps {
   readonly executor: ParallelExecutor;
   readonly notifier: INotifier;
   readonly dribbbleScraper: DribbbleScraper;
+  readonly dribbbleApiClient: DribbbleApiClient | undefined;
   readonly stitchService: StitchService;
 }
 
@@ -104,7 +106,7 @@ export async function runPipeline(
     logger, planningAgent, codegenAgent, validationAgent,
     designSelectionAgent, componentLibraryAgent,
     lintValidator, costTracker, workspace, executor, notifier,
-    dribbbleScraper, stitchService,
+    dribbbleScraper, dribbbleApiClient, stitchService,
   } = deps;
   const { prdContent, runId, projectTitle, projectScope } = input;
   const startMs = Date.now();
@@ -174,17 +176,68 @@ export async function runPipeline(
   }
 
   // ── Phase 1: Design Search (Dribbble + LLM Selection) ─────────
+  // NOTE: Dribbble search is a HARD requirement. Pipeline aborts if it fails.
+  //
+  // Strategy: API client (stable) → Playwright scraper (fallback) → cache (last resort)
   logger.info(`\n========== Phase 1: Design Search ==========`);
 
+  const designCacheKey = await hashContent(`${projectTitle}::${projectScope}`);
   const queries = dribbbleScraper.buildSearchQueries(projectTitle, projectScope);
   logger.info(`Searching Dribbble with ${queries.length} queries`, { queries });
 
-  const searchResult = await dribbbleScraper.search(
-    queries,
-    pw.navigate,
-    pw.snapshot,
-    pw.screenshot,
-  );
+  let dribbbleDesigns: DribbbleDesign[] | undefined;
+
+  // 1a. Try Dribbble API client (most reliable — no DOM parsing)
+  if (dribbbleApiClient) {
+    logger.info(`Attempting Dribbble API search (token configured)...`);
+    const apiResult = await dribbbleApiClient.search(queries);
+    if (apiResult.ok && apiResult.value.length > 0) {
+      dribbbleDesigns = apiResult.value;
+      logger.info(`Dribbble API returned ${dribbbleDesigns.length} designs`);
+    } else {
+      logger.warn(`Dribbble API search failed, falling back to Playwright scraper`, {
+        error: apiResult.ok ? `zero results` : apiResult.error.message,
+      });
+    }
+  }
+
+  // 1b. Fallback to Playwright scraper
+  if (!dribbbleDesigns) {
+    logger.info(`Attempting Dribbble Playwright scraper...`);
+    const scrapeResult = await dribbbleScraper.search(
+      queries,
+      pw.navigate,
+      pw.snapshot,
+      pw.screenshot,
+    );
+    if (scrapeResult.ok && scrapeResult.value.length > 0) {
+      dribbbleDesigns = scrapeResult.value;
+      logger.info(`Dribbble scraper returned ${dribbbleDesigns.length} designs`);
+    } else {
+      logger.warn(`Dribbble scraper also failed`, {
+        error: scrapeResult.ok ? `zero results` : scrapeResult.error.message,
+      });
+    }
+  }
+
+  // 1c. Last resort — check design cache from a previous run
+  if (!dribbbleDesigns) {
+    logger.warn(`Both Dribbble sources failed, checking design cache...`);
+    const cached = await workspace.loadCachedDribbbleDesigns(designCacheKey);
+    if (cached && cached.length > 0) {
+      dribbbleDesigns = cached;
+      logger.info(`Loaded ${cached.length} cached Dribbble designs (from prior run)`);
+    }
+  }
+
+  // Hard gate — abort if no designs from any source
+  if (!dribbbleDesigns || dribbbleDesigns.length === 0) {
+    logger.error(`Aborting pipeline — Dribbble search failed from all sources (API, scraper, cache)`);
+    return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
+  }
+
+  // Cache successful results for future runs
+  await workspace.saveCachedDribbbleDesigns(designCacheKey, dribbbleDesigns);
 
   let inspiration: DribbbleDesign | undefined;
   let designNotes: DesignSelectionResult[`designNotes`] = {
@@ -193,23 +246,9 @@ export async function runPipeline(
     keyComponents: [`data-table`, `sidebar`, `card`, `form`],
   };
 
-  // NOTE: Dribbble search is a HARD requirement. Pipeline aborts if it fails.
-
-  if (!searchResult.ok) {
-    logger.error(`Aborting pipeline — Dribbble search failed: ${searchResult.error.message}`);
-    return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
-  }
-
-  if (searchResult.value.length === 0) {
-    logger.error(`Aborting pipeline — Dribbble search returned zero designs`);
-    return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
-  }
-
-  logger.info(`Found ${searchResult.value.length} Dribbble designs`);
-
   // LLM selects the best design
   const selectionResult = await designSelectionAgent.run({
-    designs: searchResult.value,
+    designs: dribbbleDesigns,
     prdContent,
     projectTitle,
     projectScope,
@@ -217,7 +256,7 @@ export async function runPipeline(
 
   if (selectionResult.ok) {
     const sel = selectionResult.value.result;
-    inspiration = searchResult.value[sel.selectedIndex];
+    inspiration = dribbbleDesigns[sel.selectedIndex];
     designNotes = sel.designNotes;
 
     costTracker.record(
@@ -235,13 +274,18 @@ export async function runPipeline(
     logger.warn(`Design selection LLM failed, using first result as fallback`, {
       error: selectionResult.error.message,
     });
-    inspiration = searchResult.value[0];
+    inspiration = dribbbleDesigns[0];
   }
 
   // ── Phase 2: Design Creation (Stitch + User Pick) ─────────────
+  // NOTE: Google Stitch is a HARD requirement. Pipeline aborts if it fails.
+  //
+  // Strategy: live Stitch generation → cache (last resort)
   logger.info(`\n========== Phase 2: Design Creation (Google Stitch) ==========`);
 
-  // NOTE: Google Stitch is a HARD requirement. Pipeline aborts if it fails.
+  let stitchDesigns: StitchDesign[] | undefined;
+
+  // 2a. Try live Stitch generation (already has per-submission retry built in)
   const stitchResult = await stitchService.generateDesigns(
     inspiration!,
     prdContent,
@@ -257,13 +301,35 @@ export async function runPipeline(
     },
   );
 
-  if (!stitchResult.ok) {
-    logger.error(`Aborting pipeline — Stitch design generation failed: ${stitchResult.error.message}`);
+  if (stitchResult.ok && stitchResult.value.length > 0) {
+    stitchDesigns = stitchResult.value;
+    logger.info(`Generated ${stitchDesigns.length} Stitch designs`);
+  } else {
+    logger.warn(`Stitch live generation failed`, {
+      error: stitchResult.ok ? `zero designs generated` : stitchResult.error.message,
+    });
+  }
+
+  // 2b. Last resort — check design cache from a previous run
+  if (!stitchDesigns) {
+    logger.warn(`Stitch generation failed, checking design cache...`);
+    const cached = await workspace.loadCachedStitchDesigns(designCacheKey);
+    if (cached && cached.length > 0) {
+      stitchDesigns = cached;
+      logger.info(`Loaded ${cached.length} cached Stitch designs (from prior run)`);
+    }
+  }
+
+  // Hard gate — abort if no Stitch designs from any source
+  if (!stitchDesigns || stitchDesigns.length === 0) {
+    logger.error(`Aborting pipeline — Stitch design generation failed from all sources (live, cache)`);
     return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
   }
 
-  const stitchDesigns = stitchResult.value;
-  logger.info(`Generated ${stitchDesigns.length} Stitch designs, opening in browser tabs...`);
+  // Cache successful results for future runs
+  await workspace.saveCachedStitchDesigns(designCacheKey, stitchDesigns);
+
+  logger.info(`${stitchDesigns.length} Stitch designs available, opening in browser tabs...`);
 
   // Track all design URLs for decisions doc
   const allDesignUrls = stitchDesigns.map((d) => ({ name: d.name, url: d.previewUrl }));

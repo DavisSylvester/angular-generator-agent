@@ -4,6 +4,7 @@ import type { Logger } from 'winston';
 import type { Result, StitchDesign, DribbbleDesign } from '../types/index.mts';
 import { ok, err } from '../types/index.mts';
 import { ulid } from 'ulid';
+import { retryWithBackoff } from '../utils/retry-with-backoff.mts';
 
 /**
  * Playwright callbacks the caller wires up to MCP tools.
@@ -157,7 +158,16 @@ export class StitchService {
       if (!prompt || !direction) continue;
 
       try {
-        const design = await this.submitToStitch(prompt, i, projectTitle, direction, pw);
+        const design = await retryWithBackoff(
+          () => this.submitToStitch(prompt, i, projectTitle, direction, pw),
+          {
+            maxAttempts: 3,
+            baseDelayMs: 5000,
+            maxDelayMs: 30000,
+            label: `Stitch submission "${direction.name}"`,
+          },
+          this.logger,
+        );
         designs.push(design);
         this.logger.info(`Stitch design ${i + 1}/${prompts.length} created`, {
           id: design.id,
@@ -166,7 +176,7 @@ export class StitchService {
           previewUrl: design.previewUrl,
         });
       } catch (error) {
-        this.logger.warn(`Stitch submission ${i + 1} (${direction.name}) failed`, {
+        this.logger.warn(`Stitch submission ${i + 1} (${direction.name}) failed after retries`, {
           error: error instanceof Error ? error.message : String(error),
         });
       }
@@ -264,7 +274,7 @@ export class StitchService {
     // Navigate to Stitch
     this.logger.info(`[${variationIndex + 1}] Opening Stitch for "${direction.name}"...`);
     await pw.navigate(`https://stitch.withgoogle.com/`);
-    await pw.waitFor(3000);
+    await pw.waitFor(5000);
 
     // Take snapshot to find the prompt input
     const snap = await pw.snapshot();
@@ -290,7 +300,7 @@ export class StitchService {
       if (submitRef) {
         this.logger.info(`Clicking Generate designs...`);
         await pw.click(submitRef);
-        await pw.waitFor(15000); // Wait for generation
+        await pw.waitFor(25000); // Wait for generation (Stitch can take 15-25s)
       }
     } else {
       // Fallback: navigate with prompt in URL

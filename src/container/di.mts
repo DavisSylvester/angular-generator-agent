@@ -21,6 +21,7 @@ import { TelegramChannel } from '../notifications/telegram-channel.mts';
 import { Notifier } from '../notifications/notifier.mts';
 import { LintValidator } from '../verification/lint-validator.mts';
 import { DribbbleScraper } from '../services/dribbble-scraper.mts';
+import { DribbbleApiClient } from '../services/dribbble-api-client.mts';
 import { StitchService } from '../services/stitch-service.mts';
 import { PROVIDER_MODEL_MAP, getFallbackTiers } from '../config/models.mts';
 import type { LlmProvider, AgentRole } from '../config/models.mts';
@@ -40,6 +41,7 @@ export interface Container {
   readonly executor: ParallelExecutor;
   readonly notifier: INotifier;
   readonly dribbbleScraper: DribbbleScraper;
+  readonly dribbbleApiClient: DribbbleApiClient | undefined;
   readonly stitchService: StitchService;
   readonly pipelineConfig: PipelineConfig;
 }
@@ -155,6 +157,9 @@ export function createContainer(env: EnvConfig, overrides?: Partial<PipelineConf
 
   // ── Services ───────────────────────────────────────────────────
   const dribbbleScraper = new DribbbleScraper(logger, env.DRIBBBLE_RESULT_COUNT);
+  const dribbbleApiClient = env.DRIBBBLE_ACCESS_TOKEN
+    ? new DribbbleApiClient(logger, env.DRIBBBLE_ACCESS_TOKEN, env.DRIBBBLE_RESULT_COUNT)
+    : undefined;
   const googleApiKey = env.GOOGLE_API_KEY ?? env.STITCH_API_KEY ?? ``;
   const stitchService = new StitchService(logger, googleApiKey, env.STITCH_DESIGN_COUNT);
 
@@ -197,6 +202,7 @@ export function createContainer(env: EnvConfig, overrides?: Partial<PipelineConf
     executor,
     notifier,
     dribbbleScraper,
+    dribbbleApiClient,
     stitchService,
     pipelineConfig,
   };
