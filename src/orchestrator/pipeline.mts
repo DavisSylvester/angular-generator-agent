@@ -69,6 +69,8 @@ export interface PlaywrightCallbacks {
   screenshot(): Promise<string>;
   openTab(url: string): Promise<void>;
   runCommand(cmd: string, args: string[], cwd: string): Promise<{ exitCode: number; stdout: string; stderr: string }>;
+  fill?(ref: string, value: string): Promise<void>;
+  click?(ref: string): Promise<void>;
 }
 
 interface PipelineInput {
@@ -295,8 +297,8 @@ export async function runPipeline(
       navigate: pw.navigate,
       snapshot: pw.snapshot,
       screenshot: pw.screenshot,
-      fill: async () => { /* wired by caller */ },
-      click: async () => { /* wired by caller */ },
+      fill: pw.fill ?? (async () => { /* no-op — no browser wired */ }),
+      click: pw.click ?? (async () => { /* no-op — no browser wired */ }),
       waitFor: async (ms) => new Promise((r) => setTimeout(r, ms)),
     },
   );
