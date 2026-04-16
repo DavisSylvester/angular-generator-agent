@@ -1,0 +1,181 @@
+import type { Logger } from 'winston';
+import type { Result, DribbbleDesign } from '../types/index.mts';
+import { ok, err } from '../types/index.mts';
+
+/**
+ * Scrapes Dribbble for design inspiration using Playwright MCP tools.
+ *
+ * Flow:
+ *   1. Navigate to dribbble.com/search/<query>
+ *   2. Wait for shots to load
+ *   3. Take a snapshot of the page (accessibility tree)
+ *   4. Extract shot titles, URLs, authors, and image URLs
+ *   5. Return at least `minResults` designs
+ *
+ * Requires the Playwright MCP server to be running.
+ */
+export class DribbbleScraper {
+
+  private readonly logger: Logger;
+  private readonly minResults: number;
+
+  constructor(logger: Logger, minResults: number) {
+    this.logger = logger;
+    this.minResults = minResults;
+  }
+
+  /**
+   * Build search queries from the PRD title, scope, and description.
+   * Produces multiple query variants to maximise relevant results.
+   */
+  buildSearchQueries(projectTitle: string, projectScope: string): string[] {
+    const base = projectTitle.toLowerCase().replace(/[^a-z0-9\s]/g, ``).trim();
+    const scopeTerms = projectScope.toLowerCase().replace(/[^a-z0-9\s]/g, ``).trim();
+
+    return [
+      `${base} dashboard`,
+      `${base} web portal`,
+      `${scopeTerms} ui design`,
+      `${base} admin panel`,
+      `${scopeTerms} management dashboard`,
+    ];
+  }
+
+  /**
+   * Search Dribbble via Playwright and return scraped designs.
+   *
+   * @param queries - Search query strings to try
+   * @param navigate - Callback that drives Playwright `browser_navigate`
+   * @param snapshot - Callback that drives Playwright `browser_snapshot`
+   * @param screenshot - Callback that drives Playwright `browser_take_screenshot`
+   */
+  async search(
+    queries: readonly string[],
+    navigate: (url: string) => Promise<void>,
+    snapshot: () => Promise<string>,
+    screenshot: () => Promise<string>,
+  ): Promise<Result<DribbbleDesign[], Error>> {
+    const allDesigns: DribbbleDesign[] = [];
+    const seenUrls = new Set<string>();
+
+    for (const query of queries) {
+      if (allDesigns.length >= this.minResults) break;
+
+      try {
+        const encoded = encodeURIComponent(query);
+        const searchUrl = `https://dribbble.com/search/${encoded}`;
+
+        this.logger.info(`Searching Dribbble`, { query, url: searchUrl });
+        await navigate(searchUrl);
+
+        // Take screenshot for debugging / LLM visual context
+        const screenshotData = await screenshot();
+        this.logger.debug(`Dribbble screenshot captured`, { query, bytes: screenshotData.length });
+
+        // Get accessibility snapshot for structured scraping
+        const snap = await snapshot();
+        const parsed = this.parseSnapshot(snap, query);
+
+        for (const design of parsed) {
+          if (!seenUrls.has(design.url)) {
+            seenUrls.add(design.url);
+            allDesigns.push(design);
+          }
+        }
+
+        this.logger.info(`Scraped ${parsed.length} designs for query "${query}"`, {
+          total: allDesigns.length,
+        });
+      } catch (error) {
+        this.logger.warn(`Dribbble search failed for query "${query}"`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    if (allDesigns.length < this.minResults) {
+      return err(
+        new Error(
+          `Only found ${allDesigns.length} designs, need at least ${this.minResults}. ` +
+          `Ensure Playwright MCP is running and dribbble.com is accessible.`,
+        ),
+      );
+    }
+
+    return ok(allDesigns);
+  }
+
+  /**
+   * Parse the Playwright accessibility snapshot to extract design cards.
+   *
+   * Dribbble shot cards typically contain:
+   *   - An image (the shot thumbnail)
+   *   - A link with the shot title pointing to /shots/<id>
+   *   - An author name
+   *
+   * The snapshot is a text-based accessibility tree. We look for patterns
+   * that match Dribbble's card structure.
+   */
+  parseSnapshot(snapshotText: string, searchQuery: string): DribbbleDesign[] {
+    const designs: DribbbleDesign[] = [];
+    const lines = snapshotText.split(`\n`);
+
+    // Pattern: look for links that point to /shots/
+    const shotLinkPattern = /link\s+"([^"]+)"\s+.*?url:\s*(https?:\/\/dribbble\.com\/shots\/\S+)/i;
+    const imgPattern = /img\s+"([^"]+)"\s+.*?url:\s*(https?:\/\/\S+)/i;
+
+    let currentTitle = ``;
+    let currentUrl = ``;
+    let currentImage = ``;
+    let currentAuthor = ``;
+
+    for (const line of lines) {
+      const shotMatch = shotLinkPattern.exec(line);
+      if (shotMatch) {
+        // Flush previous design if we have one
+        if (currentTitle && currentUrl) {
+          designs.push({
+            title: currentTitle,
+            url: currentUrl,
+            imageUrl: currentImage,
+            author: currentAuthor || `Unknown`,
+            description: `Dribbble shot found for "${searchQuery}"`,
+            tags: searchQuery.split(/\s+/),
+          });
+        }
+
+        currentTitle = shotMatch[1] ?? ``;
+        currentUrl = shotMatch[2] ?? ``;
+        currentImage = ``;
+        currentAuthor = ``;
+        continue;
+      }
+
+      // Capture images associated with current shot
+      const imgMatch = imgPattern.exec(line);
+      if (imgMatch && !currentImage && currentUrl) {
+        currentImage = imgMatch[2] ?? ``;
+      }
+
+      // Capture author (often appears as a link to /username)
+      const authorMatch = /link\s+"([^"]+)"\s+.*?url:\s*https?:\/\/dribbble\.com\/(?!shots\/)(\w+)/i.exec(line);
+      if (authorMatch && !currentAuthor && currentUrl) {
+        currentAuthor = authorMatch[1] ?? ``;
+      }
+    }
+
+    // Flush last design
+    if (currentTitle && currentUrl) {
+      designs.push({
+        title: currentTitle,
+        url: currentUrl,
+        imageUrl: currentImage,
+        author: currentAuthor || `Unknown`,
+        description: `Dribbble shot found for "${searchQuery}"`,
+        tags: searchQuery.split(/\s+/),
+      });
+    }
+
+    return designs;
+  }
+}
