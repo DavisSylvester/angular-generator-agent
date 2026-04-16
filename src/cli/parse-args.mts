@@ -4,6 +4,7 @@ export type CliCommand =
   | { kind: `resume`; runId: string }
   | { kind: `list-runs` }
   | { kind: `status`; runId: string }
+  | { kind: `login` }
   | { kind: `help` };
 
 export type CliFramework = `angular` | `react` | `vue` | `svelte`;
@@ -28,6 +29,7 @@ USAGE
   bun run src/index.mts --prd <file>              Start new SPA generation
   bun run src/index.mts --prompt "<text>"          Generate PRD from raw text, then run pipeline
   bun run src/index.mts --prd <file> --framework react   Use React instead of Angular
+  bun run src/index.mts --login                     Log in to Google Stitch (one-time setup)
   bun run src/index.mts --resume <run-id>          Resume an interrupted run
   bun run src/index.mts --list-runs                List all previous runs
   bun run src/index.mts --status <run-id>          Show task status for a run
@@ -43,6 +45,7 @@ OPTIONS
   --iterations <n>      Max fix iterations per task (default: 5 or env)
   --max-tasks <n>       Limit to first N tasks
   --concurrency <n>     Parallel task limit (default: 4 or env)
+  --login               Open Stitch in a browser, log in manually, save session
   --no-validate         Skip LLM validation (lint still runs)
   --skip-playwright     Skip Playwright install/test during preflight
   --headless            Run browser in headless mode (default: headed)
@@ -131,6 +134,10 @@ export function parseArgs(argv: readonly string[]): CliOptions {
         command = { kind: `resume`, runId };
         break;
       }
+
+      case `--login`:
+        command = { kind: `login` };
+        break;
 
       case `--list-runs`:
         command = { kind: `list-runs` };

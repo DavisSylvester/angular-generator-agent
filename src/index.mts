@@ -7,7 +7,10 @@ import { createContainer } from './container/di.mts';
 import { parsePrd, parseStructuredContent } from './input/prd-parser.mts';
 import { runPipeline } from './orchestrator/pipeline.mts';
 import type { PipelineConfig } from './types/index.mts';
+import { join } from 'path';
 import { launchBrowser } from './browser/playwright-browser.mts';
+
+const SESSION_PATH = join(import.meta.dir, `..`, `.auth`, `stitch-session.json`);
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv);
@@ -64,6 +67,33 @@ async function main(): Promise<void> {
         logger.info(`  ${icon} ${taskId}: ${state.status} (iteration ${state.iteration})`);
       }
     }
+    process.exit(0);
+  }
+
+  // ── Login flow ────────────────────────────────────────────────
+  if (options.command.kind === `login`) {
+    logger.info(`Opening Stitch for login — complete the Google sign-in in the browser window`);
+    logger.info(`Session will be saved to: ${SESSION_PATH}`);
+
+    const handle = await launchBrowser({
+      headless: false,
+      logger,
+    });
+
+    await handle.callbacks.navigate(`https://stitch.withgoogle.com/`);
+    logger.info(``);
+    logger.info(`Please log in to Google Stitch in the browser window.`);
+    logger.info(`Once you see the Stitch dashboard, press ENTER here to save the session.`);
+    logger.info(``);
+
+    await new Promise<void>((resolve) => {
+      process.stdin.once(`data`, () => resolve());
+    });
+
+    await handle.saveSession(SESSION_PATH);
+    await handle.close();
+
+    logger.info(`Session saved. You can now run the pipeline without manual login.`);
     process.exit(0);
   }
 
@@ -151,6 +181,7 @@ async function main(): Promise<void> {
   const browserHandle = await launchBrowser({
     headless: options.headless,
     logger,
+    sessionPath: SESSION_PATH,
   });
 
   let result;

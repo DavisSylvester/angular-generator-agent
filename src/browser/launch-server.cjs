@@ -7,8 +7,11 @@
 
 const { chromium } = require("playwright");
 const readline = require("readline");
+const fs = require("fs");
+const path = require("path");
 
 const headless = process.argv.includes("--headless");
+const sessionPath = process.argv.find(a => a.startsWith("--session="))?.split("=")[1] || "";
 
 /** @type {import("playwright").BrowserContext} */
 let context;
@@ -233,6 +236,16 @@ const handlers = {
     return await activePage.evaluate(new Function("return (" + js + ")()"));
   },
 
+  async saveSession({ savePath }) {
+    const target = savePath || sessionPath;
+    if (!target) throw new Error("No session path specified");
+    const dir = path.dirname(target);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    await context.storageState({ path: target });
+    process.stderr.write("[bridge] Session saved to " + target + "\n");
+    return target;
+  },
+
   async close() {
     await context.close();
     await browser.close();
@@ -249,7 +262,14 @@ const handlers = {
     timeout: 30000,
     args: ["--disable-gpu", "--disable-dev-shm-usage"],
   });
-  context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+
+  // Load saved session (cookies, localStorage) if available
+  const contextOpts = { viewport: { width: 1440, height: 900 } };
+  if (sessionPath && fs.existsSync(sessionPath)) {
+    contextOpts.storageState = sessionPath;
+    process.stderr.write("[bridge] Loaded session from " + sessionPath + "\n");
+  }
+  context = await browser.newContext(contextOpts);
   activePage = await context.newPage();
 
   // Signal ready
