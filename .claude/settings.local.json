@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bun run *)",
+      "Bash(ollama list *)",
+      "Bash(bun install *)",
+      "Bash(npx tsc *)",
+      "Bash(bunx tsc *)",
+      "Bash(bun test *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "WebSearch",
+      "WebFetch(domain:www.banani.co)",
+      "WebFetch(domain:ybuild.ai)",
+      "WebFetch(domain:www.komposo.ai)"
+    ]
+  }
+}
