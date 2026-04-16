@@ -36,27 +36,6 @@ async function commandExists(cmd: string): Promise<{ found: boolean; version: st
   }
 }
 
-async function installGlobal(pkg: string, logger: Logger): Promise<boolean> {
-  logger.info(`Installing ${pkg}...`);
-  try {
-    const proc = Bun.spawn([`bun`, `add`, `-g`, pkg], { stdout: `pipe`, stderr: `pipe` });
-    const stderr = await new Response(proc.stderr).text();
-    const code = await proc.exited;
-
-    if (code === 0) {
-      logger.info(`${pkg} installed successfully`);
-      return true;
-    }
-    logger.warn(`Failed to install ${pkg}: ${stderr.trim()}`);
-    return false;
-  } catch (error) {
-    logger.warn(`Failed to install ${pkg}`, {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return false;
-  }
-}
-
 async function npmInstallGlobal(pkg: string, logger: Logger): Promise<boolean> {
   logger.info(`Installing ${pkg} via npm...`);
   try {
@@ -146,9 +125,6 @@ async function checkPlaywright(
   logger: Logger,
   skipTest: boolean,
 ): Promise<{ check: DepCheckResult; didInstall: boolean }> {
-  // Check if npx is available for fallback installs
-  const { version: pwVersion } = await commandExists(`npx`);
-
   if (skipTest) {
     return {
       check: {
@@ -167,60 +143,19 @@ async function checkPlaywright(
     await pw.navigate(`about:blank`);
     const screenshot = await pw.screenshot();
 
-    // If screenshot returns empty string, the callbacks are stubs (standalone mode)
+    // If screenshot returns empty string, the callbacks are stubs (standalone mode).
+    // Don't attempt to install Playwright — the npm package can't rewire the
+    // stub callbacks, so the install would be pointless.  Just report it as a
+    // non-critical warning and let the pipeline degrade gracefully.
     if (!screenshot) {
       logger.warn(`Playwright MCP callbacks returned empty — running in standalone mode`);
-
-      // Check if @anthropic-ai/claude-code-playwright is available
-      const playwrightInstalled = await checkPlaywrightPackage();
-
-      if (!playwrightInstalled) {
-        logger.info(`Playwright not available — attempting to install @playwright/test`);
-        const installed = await installGlobal(`playwright`, logger);
-
-        if (installed) {
-          // Install browsers
-          logger.info(`Installing Playwright browsers...`);
-          try {
-            const proc = Bun.spawn([`npx`, `playwright`, `install`, `chromium`], {
-              stdout: `pipe`,
-              stderr: `pipe`,
-            });
-            await proc.exited;
-            logger.info(`Playwright browsers installed`);
-          } catch {
-            logger.warn(`Failed to install Playwright browsers`);
-          }
-
-          return {
-            check: {
-              name: `playwright-mcp`,
-              status: `stub`,
-              message: `Playwright MCP not connected — fallback playwright package installed. `
-                + `For full MCP support, run inside Claude Code with the Playwright plugin enabled.`,
-            },
-            didInstall: true,
-          };
-        }
-
-        return {
-          check: {
-            name: `playwright-mcp`,
-            status: `stub`,
-            message: `Playwright MCP not connected and fallback install failed. `
-              + `Pipeline will run with no-op browser callbacks. `
-              + `For browser automation, run inside Claude Code with the Playwright plugin.`,
-          },
-          didInstall: false,
-        };
-      }
+      logger.info(`Browser validation will be skipped. For full Playwright support, run inside Claude Code with the Playwright plugin enabled.`);
 
       return {
         check: {
           name: `playwright-mcp`,
           status: `stub`,
-          version: pwVersion,
-          message: `Playwright MCP callbacks are stubs — browser automation will be no-ops. `
+          message: `Standalone mode — browser automation will be no-ops. `
             + `For full support, run inside Claude Code with the Playwright plugin enabled.`,
         },
         didInstall: false,
@@ -240,25 +175,12 @@ async function checkPlaywright(
     return {
       check: {
         name: `playwright-mcp`,
-        status: `missing`,
+        status: `stub`,
         message: `Playwright MCP test failed: ${error instanceof Error ? error.message : String(error)}. `
-          + `Ensure the Playwright plugin is enabled in Claude Code settings.`,
+          + `Pipeline will continue without browser validation.`,
       },
       didInstall: false,
     };
-  }
-}
-
-async function checkPlaywrightPackage(): Promise<boolean> {
-  try {
-    const proc = Bun.spawn([`npx`, `playwright`, `--version`], {
-      stdout: `pipe`,
-      stderr: `pipe`,
-    });
-    const code = await proc.exited;
-    return code === 0;
-  } catch {
-    return false;
   }
 }
 

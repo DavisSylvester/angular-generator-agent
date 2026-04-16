@@ -184,6 +184,7 @@ export function createContainer(env: EnvConfig, overrides?: Partial<PipelineConf
     stitchDesignCount: env.STITCH_DESIGN_COUNT,
     dribbbleResultCount: env.DRIBBBLE_RESULT_COUNT,
     playwrightValidationElements: env.PLAYWRIGHT_VALIDATION_ELEMENTS,
+    skipPlaywrightTest: overrides?.skipPlaywrightTest ?? false,
     framework: overrides?.framework ?? `angular`,
   };
 

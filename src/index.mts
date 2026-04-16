@@ -28,6 +28,7 @@ async function main(): Promise<void> {
   // Create DI container with CLI overrides
   const overrides: Record<string, unknown> = {
     noValidate: options.noValidate,
+    skipPlaywrightTest: options.skipPlaywrightTest,
     apiSpecPath: options.apiSpecPath,
     framework: options.framework,
   };

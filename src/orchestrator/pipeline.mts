@@ -114,7 +114,7 @@ export async function runPipeline(
   // ── Preflight: Dependency Check ───────────────────────────────
   const preflightReport = await runPreflightChecks(pw, logger, {
     googleApiKey: config.googleApiKey,
-    skipPlaywrightTest: false,
+    skipPlaywrightTest: config.skipPlaywrightTest,
   });
 
   if (!preflightReport.passed) {
