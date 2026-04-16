@@ -18,6 +18,7 @@ interface LaunchOptions {
   headless: boolean;
   logger: Logger;
   sessionPath?: string;
+  userDataDir?: string;
 }
 
 // ── Bridge message types ────────────────────────────────────────────
@@ -33,7 +34,7 @@ interface BridgeResponse {
 
 export async function launchBrowser(options: LaunchOptions): Promise<BrowserHandle> {
 
-  const { headless, logger, sessionPath } = options;
+  const { headless, logger, sessionPath, userDataDir } = options;
 
   logger.info(`Launching browser bridge (headless: ${headless})...`);
 
@@ -41,6 +42,7 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
   const args = [bridgePath];
   if (headless) args.push("--headless");
   if (sessionPath) args.push(`--session=${sessionPath}`);
+  if (userDataDir) args.push(`--user-data-dir=${userDataDir}`);
 
   const proc: ChildProcess = spawn("node", args, {
     stdio: ["pipe", "pipe", "pipe"],
@@ -152,6 +154,10 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
     clickSelector: async (selector: string): Promise<void> => {
       logger.debug(`[Browser] ClickSelector: ${selector}`);
       await send("clickSelector", { selector });
+    },
+
+    getCurrentUrl: async (): Promise<string> => {
+      return (await send("getCurrentUrl")) ?? "";
     },
 
     runCommand: async (

@@ -1,16 +1,65 @@
 #!/usr/bin/env bun
 import { ulid } from 'ulid';
 import { createLogger, format, transports } from 'winston';
+import { spawn as spawnChild } from 'child_process';
+import { existsSync } from 'fs';
 import { parseArgs } from './cli/parse-args.mts';
 import { loadEnv } from './config/env.mts';
 import { createContainer } from './container/di.mts';
 import { parsePrd, parseStructuredContent } from './input/prd-parser.mts';
 import { runPipeline } from './orchestrator/pipeline.mts';
 import type { PipelineConfig } from './types/index.mts';
+import type { Logger } from 'winston';
 import { join } from 'path';
 import { launchBrowser } from './browser/playwright-browser.mts';
 
 const SESSION_PATH = join(import.meta.dir, `..`, `.auth`, `stitch-session.json`);
+const CHROME_DATA_DIR = join(import.meta.dir, `..`, `.auth`, `chrome-profile`);
+
+function findChromePath(): string | null {
+  const candidates = [
+    join(process.env.PROGRAMFILES ?? ``, `Google`, `Chrome`, `Application`, `chrome.exe`),
+    join(process.env[`PROGRAMFILES(X86)`] ?? ``, `Google`, `Chrome`, `Application`, `chrome.exe`),
+    join(process.env.LOCALAPPDATA ?? ``, `Google`, `Chrome`, `Application`, `chrome.exe`),
+  ];
+  for (const p of candidates) {
+    if (existsSync(p)) return p;
+  }
+  return null;
+}
+
+async function openChromeForLogin(logger: Logger, dataDir: string, url: string): Promise<void> {
+  const chromePath = findChromePath();
+  if (!chromePath) {
+    logger.error(`Could not find Chrome. Install Google Chrome and try again.`);
+    process.exit(1);
+  }
+
+  logger.info(`Launching Chrome: ${chromePath}`);
+  const child = spawnChild(chromePath, [`--user-data-dir=${dataDir}`, url], {
+    detached: true,
+    stdio: `ignore`,
+  });
+  child.unref();
+
+  logger.info(``);
+  logger.info(`Please log in to Google Stitch in the browser window.`);
+  logger.info(`Once you see the Stitch dashboard, press ENTER here to continue.`);
+  logger.info(``);
+
+  await new Promise<void>((resolve) => {
+    process.stdin.once(`data`, () => resolve());
+  });
+
+  // Kill Chrome process tree so the profile lock is released
+  try {
+    spawnChild(`taskkill`, [`/pid`, String(child.pid), `/T`, `/F`], { stdio: `ignore` });
+  } catch { /* may already be closed */ }
+
+  // Brief pause for profile lock release
+  await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+  logger.info(`Chrome closed. Session saved in profile.`);
+}
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv);
@@ -73,25 +122,9 @@ async function main(): Promise<void> {
   // ── Login flow ────────────────────────────────────────────────
   if (options.command.kind === `login`) {
     logger.info(`Opening Stitch for login — complete the Google sign-in in the browser window`);
-    logger.info(`Session will be saved to: ${SESSION_PATH}`);
+    logger.info(`Chrome profile: ${CHROME_DATA_DIR}`);
 
-    const handle = await launchBrowser({
-      headless: false,
-      logger,
-    });
-
-    await handle.callbacks.navigate(`https://stitch.withgoogle.com/`);
-    logger.info(``);
-    logger.info(`Please log in to Google Stitch in the browser window.`);
-    logger.info(`Once you see the Stitch dashboard, press ENTER here to save the session.`);
-    logger.info(``);
-
-    await new Promise<void>((resolve) => {
-      process.stdin.once(`data`, () => resolve());
-    });
-
-    await handle.saveSession(SESSION_PATH);
-    await handle.close();
+    await openChromeForLogin(logger, CHROME_DATA_DIR, `https://stitch.withgoogle.com/`);
 
     logger.info(`Session saved. You can now run the pipeline without manual login.`);
     process.exit(0);
@@ -177,11 +210,15 @@ async function main(): Promise<void> {
     apiSpec: pipelineConfig.apiSpecPath ?? `none`,
   });
 
+  // ── Stitch login ───────────────────────────────────────────────
+  logger.info(`\n========== Stitch Login ==========`);
+  await openChromeForLogin(logger, CHROME_DATA_DIR, `https://stitch.withgoogle.com/`);
+
   // ── Browser launch ────────────────────────────────────────────
   const browserHandle = await launchBrowser({
     headless: options.headless,
     logger,
-    sessionPath: SESSION_PATH,
+    userDataDir: CHROME_DATA_DIR,
   });
 
   let result;

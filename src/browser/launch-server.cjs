@@ -12,6 +12,7 @@ const path = require("path");
 
 const headless = process.argv.includes("--headless");
 const sessionPath = process.argv.find(a => a.startsWith("--session="))?.split("=")[1] || "";
+const userDataDir = process.argv.find(a => a.startsWith("--user-data-dir="))?.split("=")[1] || "";
 
 /** @type {import("playwright").BrowserContext} */
 let context;
@@ -246,9 +247,13 @@ const handlers = {
     return target;
   },
 
+  async getCurrentUrl() {
+    return activePage.url();
+  },
+
   async close() {
     await context.close();
-    await browser.close();
+    if (browser) await browser.close();
     return null;
   },
 };
@@ -256,21 +261,37 @@ const handlers = {
 // ── Main ────────────────────────────────────────────────────────────
 
 (async () => {
-  browser = await chromium.launch({
-    headless,
-    channel: "chrome",
-    timeout: 30000,
-    args: ["--disable-gpu", "--disable-dev-shm-usage"],
-  });
+  if (userDataDir) {
+    // Persistent profile — Google treats this as a real browser (no automation flags)
+    if (!fs.existsSync(userDataDir)) fs.mkdirSync(userDataDir, { recursive: true });
+    const persistOpts = {
+      headless,
+      channel: "chrome",
+      timeout: 30000,
+      args: ["--disable-gpu", "--disable-dev-shm-usage"],
+      viewport: { width: 1440, height: 900 },
+    };
+    context = await chromium.launchPersistentContext(userDataDir, persistOpts);
+    browser = null;
+    activePage = context.pages()[0] || await context.newPage();
+    process.stderr.write("[bridge] Launched persistent context: " + userDataDir + "\n");
+  } else {
+    browser = await chromium.launch({
+      headless,
+      channel: "chrome",
+      timeout: 30000,
+      args: ["--disable-gpu", "--disable-dev-shm-usage"],
+    });
 
-  // Load saved session (cookies, localStorage) if available
-  const contextOpts = { viewport: { width: 1440, height: 900 } };
-  if (sessionPath && fs.existsSync(sessionPath)) {
-    contextOpts.storageState = sessionPath;
-    process.stderr.write("[bridge] Loaded session from " + sessionPath + "\n");
+    // Load saved session (cookies, localStorage) if available
+    const contextOpts = { viewport: { width: 1440, height: 900 } };
+    if (sessionPath && fs.existsSync(sessionPath)) {
+      contextOpts.storageState = sessionPath;
+      process.stderr.write("[bridge] Loaded session from " + sessionPath + "\n");
+    }
+    context = await browser.newContext(contextOpts);
+    activePage = await context.newPage();
   }
-  context = await browser.newContext(contextOpts);
-  activePage = await context.newPage();
 
   // Signal ready
   process.stdout.write(JSON.stringify({ ready: true }) + "\n");

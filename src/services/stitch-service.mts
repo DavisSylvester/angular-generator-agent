@@ -17,6 +17,7 @@ export interface StitchPlaywrightCallbacks {
   click(ref: string): Promise<void>;
   fillSelector(selector: string, value: string): Promise<void>;
   clickSelector(selector: string): Promise<void>;
+  getCurrentUrl(): Promise<string>;
   waitFor(ms: number): Promise<void>;
 }
 
@@ -273,16 +274,15 @@ export class StitchService {
     const designId = ulid();
     const variationName = `${projectTitle} — ${direction.name}`;
 
-    // Navigate to Stitch
+    // Navigate to Stitch home (fresh page for each design)
     this.logger.info(`[${variationIndex + 1}] Opening Stitch for "${direction.name}"...`);
     await pw.navigate(`https://stitch.withgoogle.com/`);
-    await pw.waitFor(5000);
+    await pw.waitFor(3000);
 
     // Stitch renders its UI inside a cross-origin iframe, so ariaSnapshot()
-    // can't reach the form elements. Use direct CSS selectors via fillSelector/clickSelector
-    // which try the iframe first, then the main page.
+    // can't reach the form elements. Use direct CSS selectors via fillSelector/clickSelector.
 
-    // Step 1: Fill the prompt input (textarea or input inside the iframe)
+    // Step 1: Wait for prompt input to be available (retry with backoff)
     const promptSelectors = [
       `[contenteditable="true"]`,
       `[role="textbox"]`,
@@ -291,20 +291,24 @@ export class StitchService {
     ];
 
     let filled = false;
-    for (const selector of promptSelectors) {
-      try {
-        this.logger.info(`Trying prompt selector: ${selector}`);
-        await pw.fillSelector(selector, prompt);
-        filled = true;
-        this.logger.info(`Filled prompt via selector: ${selector}`);
-        break;
-      } catch (error) {
-        this.logger.debug(`Selector ${selector} failed: ${error instanceof Error ? error.message : String(error)}`);
+    for (let attempt = 0; attempt < 3 && !filled; attempt++) {
+      if (attempt > 0) {
+        this.logger.info(`Retry ${attempt}: waiting for prompt input...`);
+        await pw.waitFor(3000);
+      }
+      for (const selector of promptSelectors) {
+        try {
+          await pw.fillSelector(selector, prompt);
+          filled = true;
+          this.logger.info(`Filled prompt via: ${selector}`);
+          break;
+        } catch {
+          this.logger.debug(`Selector ${selector} failed (attempt ${attempt + 1})`);
+        }
       }
     }
 
     if (!filled) {
-      // Last resort: navigate with prompt in URL
       this.logger.warn(`Could not fill prompt via any selector — falling back to URL query string`);
       const encodedPrompt = encodeURIComponent(prompt.slice(0, 2000));
       await pw.navigate(`https://stitch.withgoogle.com/?prompt=${encodedPrompt}`);
@@ -312,12 +316,11 @@ export class StitchService {
     } else {
       await pw.waitFor(1000);
 
-      // Step 2: Select "Web" mode (radio or button)
+      // Step 2: Select "Web" mode
       const webSelectors = [
-        `label:has-text("Web")`,
-        `[role="radio"]:has-text("Web")`,
         `button:has-text("Web")`,
-        `text=Web`,
+        `[role="radio"]:has-text("Web")`,
+        `label:has-text("Web")`,
       ];
       for (const selector of webSelectors) {
         try {
@@ -330,14 +333,12 @@ export class StitchService {
       }
       await pw.waitFor(500);
 
-      // Step 3: Click Generate/Submit button
+      // Step 3: Click Generate
       const submitSelectors = [
         `button[aria-label="Generate designs"]`,
         `button:has-text("Generate designs")`,
         `button:has-text("Generate")`,
         `button:has-text("Start designing")`,
-        `button:has-text("Create")`,
-        `button[type="submit"]`,
       ];
       let submitted = false;
       for (const selector of submitSelectors) {
@@ -352,17 +353,30 @@ export class StitchService {
       }
 
       if (submitted) {
-        this.logger.info(`Waiting for Stitch generation (up to 25s)...`);
-        await pw.waitFor(25000);
+        // Wait for Stitch to generate and redirect to /projects/<id>
+        this.logger.info(`Waiting for Stitch generation...`);
+        for (let wait = 0; wait < 12; wait++) {
+          await pw.waitFor(5000);
+          const currentUrl = await pw.getCurrentUrl();
+          if (currentUrl.includes(`/projects/`)) {
+            this.logger.info(`Stitch redirected to: ${currentUrl}`);
+            break;
+          }
+          this.logger.debug(`Still generating... (${(wait + 1) * 5}s) url: ${currentUrl}`);
+        }
       }
     }
 
-    // Capture the current URL (should now be the design project page)
-    const afterSnap = await pw.snapshot();
+    // Get the actual browser URL (not from snapshot — snapshot can't see inside the iframe)
     await pw.screenshot();
+    const designUrl = await pw.getCurrentUrl();
+    const isProjectUrl = designUrl.includes(`/projects/`);
 
-    const designUrl = this.extractCurrentUrl(afterSnap)
-      || `https://stitch.withgoogle.com/?prompt=${encodeURIComponent(prompt.slice(0, 2000))}`;
+    if (!isProjectUrl) {
+      this.logger.warn(`Stitch did not redirect to a project URL: ${designUrl}`);
+    } else {
+      this.logger.info(`Design URL: ${designUrl}`);
+    }
 
     return {
       id: designId,
@@ -418,11 +432,6 @@ export class StitchService {
     }
     this.logger.debug(`findSubmitButton: no Generate button found`);
     return null;
-  }
-
-  private extractCurrentUrl(snap: string): string | null {
-    const urlMatch = /url:\s*(https?:\/\/stitch\.withgoogle\.com\/projects\/[^\s\n]*)/i.exec(snap);
-    return urlMatch?.[1] ?? null;
   }
 
   // ── Fallback prompts ──────────────────────────────────────────────
