@@ -15,6 +15,7 @@ export interface CliOptions {
   readonly concurrency: number | undefined;
   readonly noValidate: boolean;
   readonly skipPlaywrightTest: boolean;
+  readonly headless: boolean;
   readonly apiSpecPath: string | undefined;
   readonly framework: CliFramework;
 }
@@ -44,6 +45,7 @@ OPTIONS
   --concurrency <n>     Parallel task limit (default: 4 or env)
   --no-validate         Skip LLM validation (lint still runs)
   --skip-playwright     Skip Playwright install/test during preflight
+  --headless            Run browser in headless mode (default: headed)
   --help                Show this help message
 
 PIPELINE PHASES
@@ -76,6 +78,7 @@ export function parseArgs(argv: readonly string[]): CliOptions {
   let concurrency: number | undefined;
   let noValidate = false;
   let skipPlaywrightTest = false;
+  let headless = false;
   let apiSpecPath: string | undefined;
   let framework: CliFramework = `angular`;
 
@@ -169,6 +172,10 @@ export function parseArgs(argv: readonly string[]): CliOptions {
         skipPlaywrightTest = true;
         break;
 
+      case `--headless`:
+        headless = true;
+        break;
+
       case `--framework`: {
         const val = args[++i] as CliFramework | undefined;
         const valid: CliFramework[] = [`angular`, `react`, `vue`, `svelte`];
@@ -205,6 +212,7 @@ export function parseArgs(argv: readonly string[]): CliOptions {
     concurrency,
     noValidate,
     skipPlaywrightTest,
+    headless,
     apiSpecPath,
     framework,
   };

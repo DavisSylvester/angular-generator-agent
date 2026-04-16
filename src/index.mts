@@ -6,8 +6,8 @@ import { loadEnv } from './config/env.mts';
 import { createContainer } from './container/di.mts';
 import { parsePrd, parseStructuredContent } from './input/prd-parser.mts';
 import { runPipeline } from './orchestrator/pipeline.mts';
-import type { PlaywrightCallbacks } from './orchestrator/pipeline.mts';
 import type { PipelineConfig } from './types/index.mts';
+import { launchBrowser } from './browser/playwright-browser.mts';
 
 async function main(): Promise<void> {
   const options = parseArgs(process.argv);
@@ -147,51 +147,15 @@ async function main(): Promise<void> {
     apiSpec: pipelineConfig.apiSpecPath ?? `none`,
   });
 
-  // ── Playwright callbacks ──────────────────────────────────────
-  // These wrap the Playwright MCP tools. When running inside Claude Code
-  // or another MCP host, the caller wires these to the actual MCP calls.
-  // In standalone mode, they are no-ops that log a warning.
-  const pw: PlaywrightCallbacks = {
-    navigate: async (url: string) => {
-      logger.info(`[Playwright] Navigate: ${url}`);
-      // MCP call: mcp__plugin_playwright_playwright__browser_navigate({ url })
-    },
-    snapshot: async () => {
-      logger.info(`[Playwright] Snapshot`);
-      // MCP call: mcp__plugin_playwright_playwright__browser_snapshot()
-      return ``;
-    },
-    screenshot: async () => {
-      logger.info(`[Playwright] Screenshot`);
-      // MCP call: mcp__plugin_playwright_playwright__browser_take_screenshot()
-      return ``;
-    },
-    openTab: async (url: string) => {
-      logger.info(`[Playwright] Open tab: ${url}`);
-      // MCP call: mcp__plugin_playwright_playwright__browser_tabs({ action: 'new' })
-      // then: mcp__plugin_playwright_playwright__browser_navigate({ url })
-    },
-    runCommand: async (cmd: string, args: string[], cwd: string) => {
-      logger.info(`[Shell] ${cmd} ${args.join(` `)}`, { cwd });
-      try {
-        const proc = Bun.spawn([cmd, ...args], { cwd, stdout: `pipe`, stderr: `pipe` });
-        const [stdout, stderr, exitCode] = await Promise.all([
-          new Response(proc.stdout).text(),
-          new Response(proc.stderr).text(),
-          proc.exited,
-        ]);
-        return { exitCode, stdout, stderr };
-      } catch (error) {
-        return {
-          exitCode: 1,
-          stdout: ``,
-          stderr: error instanceof Error ? error.message : String(error),
-        };
-      }
-    },
-  };
+  // ── Browser launch ────────────────────────────────────────────
+  const browserHandle = await launchBrowser({
+    headless: options.headless,
+    logger,
+  });
 
-  const result = await runPipeline(
+  let result;
+  try {
+  result = await runPipeline(
     { prdContent, runId, resumeRunId, projectTitle, projectScope },
     pipelineConfig,
     {
@@ -211,8 +175,11 @@ async function main(): Promise<void> {
       dribbbleApiClient: container.dribbbleApiClient,
       stitchService: container.stitchService,
     },
-    pw,
+    browserHandle.callbacks,
   );
+  } finally {
+    await browserHandle.close();
+  }
 
   // ── Exit ──────────────────────────────────────────────────────
   const costSummary = container.costTracker.getSummary();
