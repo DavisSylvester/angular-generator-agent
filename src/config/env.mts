@@ -32,7 +32,8 @@ const envSchema = z.object({
   STITCH_API_KEY: z.string().optional(),
   STITCH_DESIGN_COUNT: z.coerce.number().int().min(6).max(10).default(6),
 
-  // Design search
+  // Design search (Dribbble)
+  DRIBBBLE_ACCESS_TOKEN: z.string().optional(),
   DRIBBBLE_RESULT_COUNT: z.coerce.number().int().min(3).max(20).default(5),
 
   // Build validation

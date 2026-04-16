@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { join, dirname, basename } from 'node:path';
 import type { Logger } from 'winston';
-import type { TaskGraph, TaskState, CodeFile } from '../types/index.mts';
+import type { TaskGraph, TaskState, CodeFile, DribbbleDesign, StitchDesign } from '../types/index.mts';
 
 export class Workspace {
 
@@ -20,6 +20,7 @@ export class Workspace {
     await mkdir(join(runDir, `output`, `src`, `app`), { recursive: true });
     await mkdir(join(runDir, `tasks`), { recursive: true });
     await mkdir(join(this.baseDir, `.plan-cache`), { recursive: true });
+    await mkdir(join(this.baseDir, `.design-cache`), { recursive: true });
 
     this.logger.info(`Workspace initialized`, { runDir });
     return runDir;
@@ -145,5 +146,50 @@ export class Workspace {
   async saveTokenUsage(runId: string, usage: Record<string, unknown>): Promise<void> {
     const usagePath = join(this.baseDir, runId, `token-usage.json`);
     await writeFile(usagePath, JSON.stringify(usage, null, 2));
+  }
+
+  // ── Design Cache ───────────────────────────────────────────────
+
+  /**
+   * Save Dribbble search results to the design cache.
+   * Keyed by a hash of the project title + scope so the same project
+   * reuses cached inspiration if the live service fails.
+   */
+  async saveCachedDribbbleDesigns(cacheKey: string, designs: readonly DribbbleDesign[]): Promise<void> {
+    const cachePath = join(this.baseDir, `.design-cache`, `dribbble-${cacheKey}.json`);
+    await mkdir(dirname(cachePath), { recursive: true });
+    await writeFile(cachePath, JSON.stringify(designs, null, 2));
+    this.logger.info(`Cached ${designs.length} Dribbble designs`, { cacheKey });
+  }
+
+  async loadCachedDribbbleDesigns(cacheKey: string): Promise<DribbbleDesign[] | null> {
+    try {
+      const cachePath = join(this.baseDir, `.design-cache`, `dribbble-${cacheKey}.json`);
+      const content = await readFile(cachePath, `utf-8`);
+      return JSON.parse(content) as DribbbleDesign[];
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Save Stitch design results to the design cache.
+   * Keyed by a hash of the project title + scope.
+   */
+  async saveCachedStitchDesigns(cacheKey: string, designs: readonly StitchDesign[]): Promise<void> {
+    const cachePath = join(this.baseDir, `.design-cache`, `stitch-${cacheKey}.json`);
+    await mkdir(dirname(cachePath), { recursive: true });
+    await writeFile(cachePath, JSON.stringify(designs, null, 2));
+    this.logger.info(`Cached ${designs.length} Stitch designs`, { cacheKey });
+  }
+
+  async loadCachedStitchDesigns(cacheKey: string): Promise<StitchDesign[] | null> {
+    try {
+      const cachePath = join(this.baseDir, `.design-cache`, `stitch-${cacheKey}.json`);
+      const content = await readFile(cachePath, `utf-8`);
+      return JSON.parse(content) as StitchDesign[];
+    } catch {
+      return null;
+    }
   }
 }
