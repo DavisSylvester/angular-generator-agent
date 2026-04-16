@@ -34,6 +34,8 @@ import type { SpaReviewReport } from './page-reviewer.mts';
 import { runVisualFidelityReview } from './visual-fidelity-review.mts';
 import type { VisualFidelityReport } from './visual-fidelity-review.mts';
 import { extractStyleGuide } from './style-guide-extraction.mts';
+import { runPreflightChecks } from './preflight-deps.mts';
+import type { PreflightReport } from './preflight-deps.mts';
 
 // ── Dependency interfaces ───────────────────────────────────────────
 
@@ -77,6 +79,7 @@ interface PipelineInput {
 
 export interface PipelineResult {
   readonly runId: string;
+  readonly preflightReport: PreflightReport;
   readonly taskResults: Map<string, TaskState>;
   readonly files: CodeFile[];
   readonly selectedDesign: SelectedDesign | undefined;
@@ -105,6 +108,30 @@ export async function runPipeline(
   } = deps;
   const { prdContent, runId, projectTitle, projectScope } = input;
   const startMs = Date.now();
+
+  // ── Preflight: Dependency Check ───────────────────────────────
+  const preflightReport = await runPreflightChecks(pw, logger, {
+    googleApiKey: config.googleApiKey,
+    skipPlaywrightTest: false,
+  });
+
+  if (!preflightReport.passed) {
+    logger.error(`Aborting pipeline — critical dependencies missing`);
+    return {
+      runId,
+      preflightReport,
+      taskResults: new Map(),
+      files: [],
+      selectedDesign: undefined,
+      styleGuide: undefined,
+      componentLibrary: undefined,
+      buildValidation: undefined,
+      spaReview: undefined,
+      visualFidelity: undefined,
+      totalCost: costTracker.getTotalCost(),
+      durationMs: Date.now() - startMs,
+    };
+  }
 
   // ── Phase 0: Workspace Setup ──────────────────────────────────
   logger.info(`\n========== Phase 0: Workspace Setup ==========`);
@@ -388,7 +415,7 @@ export async function runPipeline(
 
     if (!planResult.ok) {
       logger.error(`Planning failed: ${planResult.error.message}`);
-      return buildResult(runId, new Map(), [], selectedDesign, styleGuide, componentLibrary, undefined, undefined, undefined, costTracker, startMs);
+      return buildResult(runId, preflightReport, new Map(), [], selectedDesign, styleGuide, componentLibrary, undefined, undefined, undefined, costTracker, startMs);
     }
 
     plan = planResult.value.result;
@@ -554,13 +581,14 @@ export async function runPipeline(
     logger.info(`SPA Review: ${spaReview.passedPages}/${spaReview.totalPages} pages passed`);
   }
 
-  return buildResult(runId, taskResults, allFiles, selectedDesign, styleGuide, componentLibrary, buildValidation, spaReview, visualFidelity, costTracker, startMs);
+  return buildResult(runId, preflightReport, taskResults, allFiles, selectedDesign, styleGuide, componentLibrary, buildValidation, spaReview, visualFidelity, costTracker, startMs);
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
 function buildResult(
   runId: string,
+  preflightReport: PreflightReport,
   taskResults: Map<string, TaskState>,
   files: CodeFile[],
   selectedDesign: SelectedDesign | undefined,
@@ -574,6 +602,7 @@ function buildResult(
 ): PipelineResult {
   return {
     runId,
+    preflightReport,
     taskResults,
     files,
     selectedDesign,
