@@ -63,3 +63,55 @@ export interface ComponentLibrary {
   readonly designTokens: ComponentLibraryFile;
   readonly components: readonly ComponentLibraryEntry[];
 }
+
+// ── Style Guide (Box Model Decomposition) ──────────────────────────
+
+/**
+ * A single color extracted from the design with usage context.
+ */
+export interface StyleGuideColor {
+  readonly hex: string;
+  readonly usage: string;
+}
+
+/**
+ * Typography spec for a single heading/body level.
+ */
+export interface TypographySpec {
+  readonly level: string;
+  readonly fontFamily: string;
+  readonly fontSize: string;
+  readonly fontWeight: string;
+  readonly color: string;
+  readonly lineHeight: string;
+}
+
+/**
+ * Spacing tokens extracted from the design.
+ */
+export interface SpacingSpec {
+  readonly gridGap: string;
+  readonly sectionPadding: string;
+  readonly cardMargin: string;
+}
+
+/**
+ * A single UI element decomposed from the Stitch design.
+ */
+export interface StyleGuideElement {
+  readonly element: string;
+  readonly properties: Record<string, string>;
+}
+
+/**
+ * The full style guide extracted via box model decomposition of
+ * the chosen Stitch design. This is the single source of truth
+ * that every generated component references.
+ */
+export interface StyleGuide {
+  readonly elements: readonly StyleGuideElement[];
+  readonly typography: readonly TypographySpec[];
+  readonly spacing: SpacingSpec;
+  readonly colorPalette: readonly StyleGuideColor[];
+  readonly rawMarkdown: string;
+}

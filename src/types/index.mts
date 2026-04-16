@@ -21,4 +21,9 @@ export type {
   ComponentCategory,
   ComponentLibraryFile,
   ComponentLibrary,
+  StyleGuide,
+  StyleGuideElement,
+  StyleGuideColor,
+  TypographySpec,
+  SpacingSpec,
 } from './design.mts';

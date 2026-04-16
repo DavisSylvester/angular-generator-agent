@@ -8,6 +8,7 @@ import type {
   ComponentCategory,
   DribbbleDesign,
   StitchDesign,
+  StyleGuide,
 } from '../types/index.mts';
 import { COMPONENT_LIBRARY_SYSTEM_PROMPT } from '../prompts/component-library.mts';
 
@@ -21,6 +22,7 @@ export interface ComponentLibraryInput {
   };
   readonly prdContent: string;
   readonly projectTitle: string;
+  readonly styleGuide?: StyleGuide | undefined;
 }
 
 export class ComponentLibraryAgent extends BaseAgent<ComponentLibraryInput, ComponentLibrary> {
@@ -40,7 +42,7 @@ export class ComponentLibraryAgent extends BaseAgent<ComponentLibraryInput, Comp
   }
 
   private buildUserPrompt(input: ComponentLibraryInput): string {
-    return [
+    const sections = [
       `## Project: ${input.projectTitle}`,
       ``,
       `## Design Inspiration`,
@@ -51,14 +53,31 @@ export class ComponentLibraryAgent extends BaseAgent<ComponentLibraryInput, Comp
       `- **Name:** ${input.chosenDesign.name}`,
       `- **Description:** ${input.chosenDesign.description}`,
       ``,
-      `## Design Notes (from evaluation)`,
-      `- **Color Palette:** ${input.designNotes.colorPalette}`,
-      `- **Layout Pattern:** ${input.designNotes.layoutPattern}`,
-      `- **Key Components:** ${input.designNotes.keyComponents.join(`, `)}`,
-      ``,
-      `## PRD`,
-      input.prdContent,
-    ].join(`\n`);
+    ];
+
+    if (input.styleGuide) {
+      sections.push(
+        `## Style Guide (extracted from design — SINGLE SOURCE OF TRUTH)`,
+        ``,
+        `Use these exact values for all colors, typography, spacing, and element dimensions.`,
+        `Do NOT guess or deviate — every component must reference these specs:`,
+        ``,
+        input.styleGuide.rawMarkdown,
+        ``,
+      );
+    } else {
+      sections.push(
+        `## Design Notes (from evaluation)`,
+        `- **Color Palette:** ${input.designNotes.colorPalette}`,
+        `- **Layout Pattern:** ${input.designNotes.layoutPattern}`,
+        `- **Key Components:** ${input.designNotes.keyComponents.join(`, `)}`,
+        ``,
+      );
+    }
+
+    sections.push(`## PRD`, input.prdContent);
+
+    return sections.join(`\n`);
   }
 
   private parseLibraryResponse(content: string): ComponentLibrary {

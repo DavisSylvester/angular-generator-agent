@@ -22,6 +22,7 @@ import type {
   StitchDesign,
   SelectedDesign,
   ComponentLibrary,
+  StyleGuide,
 } from '../types/index.mts';
 import { runFixLoop } from './fix-loop.mts';
 import { pickUserDesign } from './user-design-pick.mts';
@@ -32,6 +33,7 @@ import { reviewSpaPages } from './page-reviewer.mts';
 import type { SpaReviewReport } from './page-reviewer.mts';
 import { runVisualFidelityReview } from './visual-fidelity-review.mts';
 import type { VisualFidelityReport } from './visual-fidelity-review.mts';
+import { extractStyleGuide } from './style-guide-extraction.mts';
 
 // ── Dependency interfaces ───────────────────────────────────────────
 
@@ -78,6 +80,7 @@ export interface PipelineResult {
   readonly taskResults: Map<string, TaskState>;
   readonly files: CodeFile[];
   readonly selectedDesign: SelectedDesign | undefined;
+  readonly styleGuide: StyleGuide | undefined;
   readonly componentLibrary: ComponentLibrary | undefined;
   readonly buildValidation: BuildValidationResult | undefined;
   readonly spaReview: SpaReviewReport | undefined;
@@ -250,6 +253,35 @@ export async function runPipeline(
     selectedDesign = { source: `stitch`, inspiration, chosen: chosenDesign };
   }
 
+  // ── Phase 2a: Style Guide Extraction (Box Model Decomposition) ──
+  let styleGuide: StyleGuide | undefined;
+
+  if (chosenDesign && config.googleApiKey) {
+    logger.info(`\n========== Phase 2a: Style Guide Extraction ==========`);
+
+    const sgResult = await extractStyleGuide(
+      chosenDesign,
+      config.googleApiKey,
+      runId,
+      logger,
+      workspace,
+      costTracker,
+      { navigate: pw.navigate, screenshot: pw.screenshot },
+    );
+
+    if (sgResult.ok) {
+      styleGuide = sgResult.value;
+      logger.info(`Style guide extracted — ${styleGuide.elements.length} elements, ${styleGuide.colorPalette.length} colors`);
+    } else {
+      logger.warn(`Style guide extraction failed: ${sgResult.error.message}`);
+      logger.info(`Proceeding without style guide — component library will use design notes only`);
+    }
+  } else if (!config.googleApiKey) {
+    logger.info(`Skipping style guide extraction — no Google API key configured`);
+  } else {
+    logger.info(`Skipping style guide extraction — no design selected`);
+  }
+
   // ── Phase 2b: Save Decisions ──────────────────────────────────
   if (selectedDesign) {
     logger.info(`\n========== Phase 2b: Save Decisions ==========`);
@@ -276,6 +308,7 @@ export async function runPipeline(
       designNotes,
       prdContent,
       projectTitle,
+      styleGuide,
     });
 
     if (libResult.ok) {
@@ -334,8 +367,8 @@ export async function runPipeline(
   // ── Phase 4: Planning + Code Generation ───────────────────────
   logger.info(`\n========== Phase 4: Code Generation ==========`);
 
-  // Enrich the PRD with API spec and component library context
-  const enrichedPrd = buildEnrichedPrd(prdContent, apiSpec, componentLibrary);
+  // Enrich the PRD with API spec, style guide, and component library context
+  const enrichedPrd = buildEnrichedPrd(prdContent, apiSpec, componentLibrary, styleGuide);
 
   // 4a. Plan the task graph
   let plan: TaskGraph | null = null;
@@ -355,7 +388,7 @@ export async function runPipeline(
 
     if (!planResult.ok) {
       logger.error(`Planning failed: ${planResult.error.message}`);
-      return buildResult(runId, new Map(), [], selectedDesign, componentLibrary, undefined, undefined, undefined, costTracker, startMs);
+      return buildResult(runId, new Map(), [], selectedDesign, styleGuide, componentLibrary, undefined, undefined, undefined, costTracker, startMs);
     }
 
     plan = planResult.value.result;
@@ -521,7 +554,7 @@ export async function runPipeline(
     logger.info(`SPA Review: ${spaReview.passedPages}/${spaReview.totalPages} pages passed`);
   }
 
-  return buildResult(runId, taskResults, allFiles, selectedDesign, componentLibrary, buildValidation, spaReview, visualFidelity, costTracker, startMs);
+  return buildResult(runId, taskResults, allFiles, selectedDesign, styleGuide, componentLibrary, buildValidation, spaReview, visualFidelity, costTracker, startMs);
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────
@@ -531,6 +564,7 @@ function buildResult(
   taskResults: Map<string, TaskState>,
   files: CodeFile[],
   selectedDesign: SelectedDesign | undefined,
+  styleGuide: StyleGuide | undefined,
   componentLibrary: ComponentLibrary | undefined,
   buildValidation: BuildValidationResult | undefined,
   spaReview: SpaReviewReport | undefined,
@@ -543,6 +577,7 @@ function buildResult(
     taskResults,
     files,
     selectedDesign,
+    styleGuide,
     componentLibrary,
     buildValidation,
     spaReview,
@@ -556,6 +591,7 @@ function buildEnrichedPrd(
   prdContent: string,
   apiSpec: string,
   componentLibrary: ComponentLibrary | undefined,
+  styleGuide: StyleGuide | undefined,
 ): string {
   const sections: string[] = [prdContent];
 
@@ -564,6 +600,16 @@ function buildEnrichedPrd(
       `\n\n## API Specification (from api-generator-agent)\n\n` +
       `The Angular app consumes the following API:\n\n` +
       apiSpec.slice(0, 5000),
+    );
+  }
+
+  if (styleGuide) {
+    sections.push(
+      `\n\n## Style Guide (extracted from selected design)\n\n` +
+      `The following style guide was extracted via box model decomposition of the chosen Stitch design. ` +
+      `ALL generated components MUST reference these exact values for colors, typography, spacing, and element dimensions. ` +
+      `Do NOT deviate from these specs:\n\n` +
+      styleGuide.rawMarkdown,
     );
   }
 
