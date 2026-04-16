@@ -126,7 +126,19 @@ export class DribbbleScraper {
 
     // Get accessibility snapshot for structured scraping
     const snap = await snapshot();
-    return this.parseSnapshot(snap, query);
+    this.logger.debug(`Dribbble snapshot captured`, { query, lines: snap.split(`\n`).length, chars: snap.length });
+
+    // Log first few shot-related lines for debugging
+    const shotLines = snap.split(`\n`).filter((l) => l.includes(`/shots/`));
+    this.logger.debug(`Snapshot contains ${shotLines.length} lines with /shots/`, {
+      sample: shotLines.slice(0, 3).map((l) => l.trim()),
+    });
+
+    const designs = this.parseSnapshot(snap, query);
+    this.logger.debug(`Parsed ${designs.length} designs from snapshot`, {
+      titles: designs.map((d) => d.title),
+    });
+    return designs;
   }
 
   /**
@@ -144,9 +156,8 @@ export class DribbbleScraper {
     const designs: DribbbleDesign[] = [];
     const lines = snapshotText.split(`\n`);
 
-    // Pattern: look for links that point to /shots/
-    const shotLinkPattern = /link\s+"([^"]+)"\s+.*?url:\s*(https?:\/\/dribbble\.com\/shots\/\S+)/i;
-    const imgPattern = /img\s+"([^"]+)"\s+.*?url:\s*(https?:\/\/\S+)/i;
+    // Pattern: look for links that point to /shots/<numeric-id> (supports both relative and absolute URLs)
+    const shotLinkPattern = /link\s+"([^"]+)"\s+.*?url:\s*((?:https?:\/\/dribbble\.com)?\/shots\/\d+\S*)/i;
 
     let currentTitle = ``;
     let currentUrl = ``;
@@ -168,23 +179,37 @@ export class DribbbleScraper {
           });
         }
 
-        currentTitle = shotMatch[1] ?? ``;
-        currentUrl = shotMatch[2] ?? ``;
+        // Strip "View " prefix that Dribbble prepends to link text
+        let title = shotMatch[1] ?? ``;
+        title = title.replace(/^View\s+/i, ``);
+        currentTitle = title;
+
+        // Ensure URL is absolute
+        let url = shotMatch[2] ?? ``;
+        if (url.startsWith(`/`)) url = `https://dribbble.com${url}`;
+        currentUrl = url;
+
         currentImage = ``;
         currentAuthor = ``;
         continue;
       }
 
-      // Capture images associated with current shot
-      const imgMatch = imgPattern.exec(line);
+      // Capture images associated with current shot (img "alt" or img with url)
+      const imgMatch = /img\s+"([^"]+)"(?:\s+.*?url:\s*(https?:\/\/\S+))?/i.exec(line);
       if (imgMatch && !currentImage && currentUrl) {
         currentImage = imgMatch[2] ?? ``;
       }
 
-      // Capture author (often appears as a link to /username)
-      const authorMatch = /link\s+"([^"]+)"\s+.*?url:\s*https?:\/\/dribbble\.com\/(?!shots\/)(\w+)/i.exec(line);
+      // Capture author (link to /username — not /shots/, /signups/, /pro, /search)
+      const authorMatch = /link\s+"([^"]+)"\s+.*?url:\s*(?:https?:\/\/dribbble\.com)?\/(?!shots\/|signups\/|pro|search)(\w+)/i.exec(line);
       if (authorMatch && !currentAuthor && currentUrl) {
-        currentAuthor = authorMatch[1] ?? ``;
+        // Clean author name (may repeat like "Amirul Islam Amirul Islam")
+        let author = authorMatch[1] ?? ``;
+        const half = Math.floor(author.length / 2);
+        if (author.length > 4 && author.slice(0, half) === author.slice(half + 1)) {
+          author = author.slice(0, half);
+        }
+        currentAuthor = author;
       }
     }
 

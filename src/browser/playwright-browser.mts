@@ -1,14 +1,9 @@
-import { chromium } from "playwright";
-import type { Browser, BrowserContext, Page } from "playwright";
+import { spawn } from "child_process";
+import type { ChildProcess } from "child_process";
+import { join } from "path";
+import { createInterface } from "readline";
 import type { Logger } from "winston";
 import type { PlaywrightCallbacks } from "../orchestrator/pipeline.mts";
-
-// ── Ref tracking for fill/click ─────────────────────────────────────
-
-interface ElementRef {
-  role: string;
-  name: string;
-}
 
 // ── Public interface ────────────────────────────────────────────────
 
@@ -23,134 +18,13 @@ interface LaunchOptions {
   logger: Logger;
 }
 
-// ── Roles that get a [ref=] for fill/click ──────────────────────────
+// ── Bridge message types ────────────────────────────────────────────
 
-const INTERACTIVE_ROLES = new Set([
-  "textbox", "textarea", "button", "radio", "checkbox",
-  "combobox", "slider", "link", "menuitem", "tab",
-  "option", "searchbox", "spinbutton", "switch",
-]);
-
-// ── Snapshot transformer ────────────────────────────────────────────
-//
-// Playwright 1.59+ `page.ariaSnapshot()` returns YAML-like text:
-//
-//   - navigation:
-//     - link "Home":
-//       - /url: /home
-//   - main:
-//     - heading "Hello" [level=1]
-//     - button "Click me"
-//     - textbox "Name"
-//
-// We transform it to the format the existing parsers expect:
-//   1. Inline `/url:` lines onto the parent link line
-//   2. Add `[ref=eN]` for interactive elements
-//   3. Build a ref map for fill/click
-
-function transformSnapshot(
-  raw: string,
-  refMap: Map<string, ElementRef>,
-): string {
-
-  refMap.clear();
-  const lines = raw.split("\n");
-  const result: string[] = [];
-  let counter = 1;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i] ?? "";
-
-    // Skip /url: lines — they get merged into the parent link
-    if (/^\s*-\s*\/url:/.test(line)) continue;
-
-    // Detect role and name: "- role" or '- role "name"' or '- role "name" [attrs]'
-    const roleMatch = /^(\s*-\s*)(\w+)(.*)$/.exec(line);
-    if (!roleMatch) {
-      result.push(line);
-      continue;
-    }
-
-    const indent = roleMatch[1] ?? "";
-    const role = roleMatch[2] ?? "";
-    let rest = roleMatch[3] ?? "";
-
-    // Strip trailing colon (ariaSnapshot uses `:` for containers with children)
-    rest = rest.replace(/:$/, "");
-
-    // Extract name if present: ' "Name"' or ' "Name" [attrs]'
-    const nameMatch = /^\s+"([^"]*)"(.*)$/.exec(rest);
-    const name = nameMatch?.[1] ?? "";
-    const attrs = nameMatch?.[2]?.trim() ?? rest.trim();
-
-    // Add ref for interactive elements
-    let refStr = "";
-    if (INTERACTIVE_ROLES.has(role.toLowerCase())) {
-      const ref = `e${counter++}`;
-      refStr = ` [ref=${ref}]`;
-      refMap.set(ref, { role, name });
-    }
-
-    // For links, check if next line is /url: and inline it
-    let urlStr = "";
-    if (role.toLowerCase() === "link") {
-      const nextLine = lines[i + 1] ?? "";
-      const urlMatch = /^\s*-\s*\/url:\s*(.+)$/.exec(nextLine);
-      if (urlMatch) {
-        urlStr = ` url: ${(urlMatch[1] ?? "").trim()}`;
-        // The /url: line will be skipped by the check at the top
-      }
-    }
-
-    // Reconstruct the line
-    let transformed = `${indent}${role}`;
-    if (name) transformed += ` "${name}"`;
-    if (attrs) transformed += ` ${attrs}`;
-    transformed += refStr;
-    transformed += urlStr;
-
-    result.push(transformed);
-  }
-
-  return result.join("\n");
-}
-
-// ── Resolve ref to Playwright locator ───────────────────────────────
-
-function resolveRef(
-  page: Page,
-  ref: string,
-  refMap: Map<string, ElementRef>,
-): ReturnType<Page["getByRole"]> {
-
-  const entry = refMap.get(ref);
-  if (!entry) {
-    throw new Error(`Unknown ref "${ref}" — snapshot may be stale`);
-  }
-
-  const roleMap: Record<string, string> = {
-    textbox: "textbox",
-    textarea: "textbox",
-    searchbox: "searchbox",
-    button: "button",
-    radio: "radio",
-    checkbox: "checkbox",
-    combobox: "combobox",
-    slider: "slider",
-    link: "link",
-    menuitem: "menuitem",
-    tab: "tab",
-    option: "option",
-    spinbutton: "spinbutton",
-    switch: "switch",
-  };
-
-  const ariaRole = roleMap[entry.role.toLowerCase()] ?? entry.role.toLowerCase();
-
-  if (entry.name) {
-    return page.getByRole(ariaRole as Parameters<Page["getByRole"]>[0], { name: entry.name });
-  }
-  return page.getByRole(ariaRole as Parameters<Page["getByRole"]>[0]);
+interface BridgeResponse {
+  id?: number;
+  ready?: boolean;
+  result?: string | null;
+  error?: string;
 }
 
 // ── Main launcher ───────────────────────────────────────────────────
@@ -159,64 +33,112 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
 
   const { headless, logger } = options;
 
-  logger.info(`Launching Chromium (headless: ${headless})...`);
+  logger.info(`Launching browser bridge (headless: ${headless})...`);
 
-  const browser: Browser = await chromium.launch({ headless });
-  const context: BrowserContext = await browser.newContext({
-    viewport: { width: 1440, height: 900 },
+  const bridgePath = join(import.meta.dir, "launch-server.cjs");
+  const args = [bridgePath];
+  if (headless) args.push("--headless");
+
+  const proc: ChildProcess = spawn("node", args, {
+    stdio: ["pipe", "pipe", "pipe"],
   });
-  let activePage: Page = await context.newPage();
 
-  // Ref map rebuilt on each snapshot() call
-  const refMap = new Map<string, ElementRef>();
+  // Collect stderr for diagnostics
+  proc.stderr?.on("data", (chunk: Buffer) => {
+    logger.warn(`[Browser bridge] ${chunk.toString().trim()}`);
+  });
 
-  logger.info(`Browser launched`);
+  // Set up line-based reader for responses
+  const rl = createInterface({ input: proc.stdout! });
+  const pending = new Map<number, {
+    resolve: (value: string | null) => void;
+    reject: (error: Error) => void;
+  }>();
+  let msgId = 0;
+
+  rl.on("line", (line: string) => {
+    let msg: BridgeResponse;
+    try { msg = JSON.parse(line) as BridgeResponse; } catch { return; }
+
+    if (msg.ready) {
+      logger.info(`Browser bridge ready`);
+      return;
+    }
+
+    if (msg.id === undefined) return;
+    const handler = pending.get(msg.id);
+    if (!handler) return;
+    pending.delete(msg.id);
+
+    if (msg.error) {
+      handler.reject(new Error(msg.error));
+    } else {
+      handler.resolve(msg.result ?? null);
+    }
+  });
+
+  // Wait for ready signal
+  await new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Browser bridge timed out")), 30_000);
+    const checkReady = (line: string): void => {
+      try {
+        const msg = JSON.parse(line) as BridgeResponse;
+        if (msg.ready) {
+          clearTimeout(timeout);
+          resolve();
+        }
+      } catch { /* ignore parse errors */ }
+    };
+    rl.on("line", checkReady);
+    proc.on("exit", (code) => {
+      clearTimeout(timeout);
+      reject(new Error(`Browser bridge exited with code ${code}`));
+    });
+  });
+
+  // ── RPC helper ──────────────────────────────────────────────────
+
+  function send(method: string, params?: Record<string, unknown>): Promise<string | null> {
+    const id = ++msgId;
+    return new Promise<string | null>((resolve, reject) => {
+      pending.set(id, { resolve, reject });
+      const msg = JSON.stringify({ id, method, params }) + "\n";
+      proc.stdin!.write(msg);
+    });
+  }
+
+  // ── Callbacks ───────────────────────────────────────────────────
 
   const callbacks: PlaywrightCallbacks = {
 
     navigate: async (url: string): Promise<void> => {
       logger.info(`[Browser] Navigate: ${url}`);
-      try {
-        await activePage.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
-      } catch {
-        logger.debug(`networkidle timed out, retrying with domcontentloaded`);
-        await activePage.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
-      }
+      await send("navigate", { url });
     },
 
     snapshot: async (): Promise<string> => {
       logger.debug(`[Browser] Snapshot`);
-      const raw = await activePage.ariaSnapshot();
-      return transformSnapshot(raw, refMap);
+      return (await send("snapshot")) ?? "";
     },
 
     screenshot: async (): Promise<string> => {
       logger.debug(`[Browser] Screenshot`);
-      const buffer = await activePage.screenshot({ fullPage: true });
-      return buffer.toString("base64");
+      return (await send("screenshot")) ?? "";
     },
 
     openTab: async (url: string): Promise<void> => {
       logger.info(`[Browser] Open tab: ${url}`);
-      const newPage = await context.newPage();
-      try {
-        await newPage.goto(url, { waitUntil: "networkidle", timeout: 30_000 });
-      } catch {
-        await newPage.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
-      }
-      activePage = newPage;
+      await send("openTab", { url });
     },
 
     fill: async (ref: string, value: string): Promise<void> => {
       logger.debug(`[Browser] Fill ref=${ref}`);
-      const locator = resolveRef(activePage, ref, refMap);
-      await locator.fill(value);
+      await send("fill", { ref, value });
     },
 
     click: async (ref: string): Promise<void> => {
       logger.debug(`[Browser] Click ref=${ref}`);
-      const locator = resolveRef(activePage, ref, refMap);
-      await locator.click();
+      await send("click", { ref });
     },
 
     runCommand: async (
@@ -226,11 +148,11 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
     ): Promise<{ exitCode: number; stdout: string; stderr: string }> => {
       logger.info(`[Shell] ${cmd} ${args.join(" ")}`, { cwd });
       try {
-        const proc = Bun.spawn([cmd, ...args], { cwd, stdout: "pipe", stderr: "pipe" });
+        const p = Bun.spawn([cmd, ...args], { cwd, stdout: "pipe", stderr: "pipe" });
         const [stdout, stderr, exitCode] = await Promise.all([
-          new Response(proc.stdout).text(),
-          new Response(proc.stderr).text(),
-          proc.exited,
+          new Response(p.stdout).text(),
+          new Response(p.stderr).text(),
+          p.exited,
         ]);
         return { exitCode, stdout, stderr };
       } catch (error) {
@@ -247,8 +169,12 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
     callbacks,
     close: async (): Promise<void> => {
       logger.info(`Closing browser...`);
-      await context.close();
-      await browser.close();
+      try {
+        await send("close");
+      } catch { /* bridge may already be gone */ }
+      rl.close();
+      proc.stdin?.end();
+      proc.kill();
     },
   };
 }
