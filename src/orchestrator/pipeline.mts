@@ -193,97 +193,95 @@ export async function runPipeline(
     keyComponents: [`data-table`, `sidebar`, `card`, `form`],
   };
 
-  if (searchResult.ok) {
-    logger.info(`Found ${searchResult.value.length} Dribbble designs`);
+  // NOTE: Dribbble search is a HARD requirement. Pipeline aborts if it fails.
 
-    // LLM selects the best design
-    const selectionResult = await designSelectionAgent.run({
-      designs: searchResult.value,
-      prdContent,
-      projectTitle,
-      projectScope,
+  if (!searchResult.ok) {
+    logger.error(`Aborting pipeline — Dribbble search failed: ${searchResult.error.message}`);
+    return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
+  }
+
+  if (searchResult.value.length === 0) {
+    logger.error(`Aborting pipeline — Dribbble search returned zero designs`);
+    return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
+  }
+
+  logger.info(`Found ${searchResult.value.length} Dribbble designs`);
+
+  // LLM selects the best design
+  const selectionResult = await designSelectionAgent.run({
+    designs: searchResult.value,
+    prdContent,
+    projectTitle,
+    projectScope,
+  });
+
+  if (selectionResult.ok) {
+    const sel = selectionResult.value.result;
+    inspiration = searchResult.value[sel.selectedIndex];
+    designNotes = sel.designNotes;
+
+    costTracker.record(
+      selectionResult.value.model,
+      selectionResult.value.tokenUsage.inputTokens,
+      selectionResult.value.tokenUsage.outputTokens,
+      `design-selection`,
+    );
+
+    logger.info(`LLM selected design: "${sel.selectedTitle}"`, {
+      index: sel.selectedIndex,
+      reasoning: sel.reasoning,
     });
-
-    if (selectionResult.ok) {
-      const sel = selectionResult.value.result;
-      inspiration = searchResult.value[sel.selectedIndex];
-      designNotes = sel.designNotes;
-
-      costTracker.record(
-        selectionResult.value.model,
-        selectionResult.value.tokenUsage.inputTokens,
-        selectionResult.value.tokenUsage.outputTokens,
-        `design-selection`,
-      );
-
-      logger.info(`LLM selected design: "${sel.selectedTitle}"`, {
-        index: sel.selectedIndex,
-        reasoning: sel.reasoning,
-      });
-    } else {
-      logger.warn(`Design selection LLM failed, using first result as fallback`, {
-        error: selectionResult.error.message,
-      });
-      inspiration = searchResult.value[0];
-    }
   } else {
-    logger.warn(`Dribbble search failed: ${searchResult.error.message}`);
-    logger.info(`Proceeding with default design direction`);
+    logger.warn(`Design selection LLM failed, using first result as fallback`, {
+      error: selectionResult.error.message,
+    });
+    inspiration = searchResult.value[0];
   }
 
   // ── Phase 2: Design Creation (Stitch + User Pick) ─────────────
   logger.info(`\n========== Phase 2: Design Creation (Google Stitch) ==========`);
 
-  let chosenDesign: StitchDesign | undefined;
-  let allDesignUrls: { name: string; url: string }[] = [];
+  // NOTE: Google Stitch is a HARD requirement. Pipeline aborts if it fails.
+  const stitchResult = await stitchService.generateDesigns(
+    inspiration!,
+    prdContent,
+    projectTitle,
+    designNotes,
+    {
+      navigate: pw.navigate,
+      snapshot: pw.snapshot,
+      screenshot: pw.screenshot,
+      fill: async () => { /* wired by caller */ },
+      click: async () => { /* wired by caller */ },
+      waitFor: async (ms) => new Promise((r) => setTimeout(r, ms)),
+    },
+  );
 
-  if (inspiration) {
-    const stitchResult = await stitchService.generateDesigns(
-      inspiration,
-      prdContent,
-      projectTitle,
-      designNotes,
-      {
-        navigate: pw.navigate,
-        snapshot: pw.snapshot,
-        screenshot: pw.screenshot,
-        fill: async () => { /* wired by caller */ },
-        click: async () => { /* wired by caller */ },
-        waitFor: async (ms) => new Promise((r) => setTimeout(r, ms)),
-      },
-    );
-
-    if (stitchResult.ok) {
-      const stitchDesigns = stitchResult.value;
-      logger.info(`Generated ${stitchDesigns.length} Stitch designs, opening in browser tabs...`);
-
-      // Track all design URLs for decisions doc
-      allDesignUrls = stitchDesigns.map((d) => ({ name: d.name, url: d.previewUrl }));
-
-      chosenDesign = await pickUserDesign(
-        stitchDesigns,
-        logger,
-        { openTab: pw.openTab, screenshot: pw.screenshot },
-      );
-
-      logger.info(`User selected: "${chosenDesign.name}" (${chosenDesign.id})`);
-    } else {
-      logger.warn(`Stitch design generation failed: ${stitchResult.error.message}`);
-    }
-  } else {
-    logger.info(`Skipping Stitch — no Dribbble inspiration available`);
+  if (!stitchResult.ok) {
+    logger.error(`Aborting pipeline — Stitch design generation failed: ${stitchResult.error.message}`);
+    return buildResult(runId, preflightReport, new Map(), [], undefined, undefined, undefined, undefined, undefined, undefined, costTracker, startMs);
   }
 
-  // Build SelectedDesign if both pieces are present
-  let selectedDesign: SelectedDesign | undefined;
-  if (inspiration && chosenDesign) {
-    selectedDesign = { source: `stitch`, inspiration, chosen: chosenDesign };
-  }
+  const stitchDesigns = stitchResult.value;
+  logger.info(`Generated ${stitchDesigns.length} Stitch designs, opening in browser tabs...`);
+
+  // Track all design URLs for decisions doc
+  const allDesignUrls = stitchDesigns.map((d) => ({ name: d.name, url: d.previewUrl }));
+
+  const chosenDesign = await pickUserDesign(
+    stitchDesigns,
+    logger,
+    { openTab: pw.openTab, screenshot: pw.screenshot },
+  );
+
+  logger.info(`User selected: "${chosenDesign.name}" (${chosenDesign.id})`);
+
+  const selectedDesign: SelectedDesign = { source: `stitch`, inspiration: inspiration!, chosen: chosenDesign };
 
   // ── Phase 2a: Style Guide Extraction (Box Model Decomposition) ──
   let styleGuide: StyleGuide | undefined;
 
-  if (chosenDesign && config.googleApiKey) {
+  if (config.googleApiKey) {
     logger.info(`\n========== Phase 2a: Style Guide Extraction ==========`);
 
     const sgResult = await extractStyleGuide(
@@ -303,84 +301,75 @@ export async function runPipeline(
       logger.warn(`Style guide extraction failed: ${sgResult.error.message}`);
       logger.info(`Proceeding without style guide — component library will use design notes only`);
     }
-  } else if (!config.googleApiKey) {
-    logger.info(`Skipping style guide extraction — no Google API key configured`);
   } else {
-    logger.info(`Skipping style guide extraction — no design selected`);
+    logger.info(`Skipping style guide extraction — no Google API key configured`);
   }
 
   // ── Phase 2b: Save Decisions ──────────────────────────────────
-  if (selectedDesign) {
-    logger.info(`\n========== Phase 2b: Save Decisions ==========`);
-    const outputDir = `${config.workspaceDir}/${runId}/output`;
-    await saveDecisions(outputDir, {
-      runId,
-      projectTitle,
-      framework: config.framework,
-      selectedDesign,
-      componentLibrary: undefined, // Updated after Phase 3
-      allDesignUrls,
-    }, logger);
-  }
+  logger.info(`\n========== Phase 2b: Save Decisions ==========`);
+  const decisionsOutputDir = `${config.workspaceDir}/${runId}/output`;
+  await saveDecisions(decisionsOutputDir, {
+    runId,
+    projectTitle,
+    framework: config.framework,
+    selectedDesign,
+    componentLibrary: undefined, // Updated after Phase 3
+    allDesignUrls,
+  }, logger);
 
   // ── Phase 3: Component Library ────────────────────────────────
   logger.info(`\n========== Phase 3: Component Library (${config.framework}) ==========`);
 
   let componentLibrary: ComponentLibrary | undefined;
 
-  if (selectedDesign) {
-    const libResult = await componentLibraryAgent.run({
-      inspiration: selectedDesign.inspiration,
-      chosenDesign: selectedDesign.chosen,
-      designNotes,
-      prdContent,
-      projectTitle,
-      styleGuide,
+  const libResult = await componentLibraryAgent.run({
+    inspiration: selectedDesign.inspiration,
+    chosenDesign: selectedDesign.chosen,
+    designNotes,
+    prdContent,
+    projectTitle,
+    styleGuide,
+  });
+
+  if (libResult.ok) {
+    componentLibrary = libResult.value.result;
+    costTracker.record(
+      libResult.value.model,
+      libResult.value.tokenUsage.inputTokens,
+      libResult.value.tokenUsage.outputTokens,
+      `component-library`,
+    );
+
+    // Write component library files to workspace
+    const tokenFile = componentLibrary.designTokens;
+    await workspace.saveCodeFile(runId, {
+      path: tokenFile.path,
+      content: tokenFile.content,
+      fileType: `styles`,
     });
 
-    if (libResult.ok) {
-      componentLibrary = libResult.value.result;
-      costTracker.record(
-        libResult.value.model,
-        libResult.value.tokenUsage.inputTokens,
-        libResult.value.tokenUsage.outputTokens,
-        `component-library`,
-      );
-
-      // Write component library files to workspace
-      const tokenFile = componentLibrary.designTokens;
-      await workspace.saveCodeFile(runId, {
-        path: tokenFile.path,
-        content: tokenFile.content,
-        fileType: `styles`,
-      });
-
-      for (const comp of componentLibrary.components) {
-        for (const file of comp.files) {
-          await workspace.saveCodeFile(runId, {
-            path: file.path,
-            content: file.content,
-            fileType: `other`,
-          });
-        }
+    for (const comp of componentLibrary.components) {
+      for (const file of comp.files) {
+        await workspace.saveCodeFile(runId, {
+          path: file.path,
+          content: file.content,
+          fileType: `other`,
+        });
       }
-
-      logger.info(`Component library generated`, {
-        tokens: 1,
-        components: componentLibrary.components.length,
-        files: componentLibrary.components.reduce((n, c) => n + c.files.length, 0),
-      });
-    } else {
-      logger.warn(`Component library generation failed: ${libResult.error.message}`);
     }
+
+    logger.info(`Component library generated`, {
+      tokens: 1,
+      components: componentLibrary.components.length,
+      files: componentLibrary.components.reduce((n, c) => n + c.files.length, 0),
+    });
   } else {
-    logger.info(`Skipping component library — no design selected`);
+    logger.warn(`Component library generation failed: ${libResult.error.message}`);
   }
 
   // Update decisions doc with color palette now that component library exists
-  if (selectedDesign && componentLibrary) {
-    const outputDir = `${config.workspaceDir}/${runId}/output`;
-    await saveDecisions(outputDir, {
+  if (componentLibrary) {
+    await saveDecisions(decisionsOutputDir, {
       runId,
       projectTitle,
       framework: config.framework,
@@ -501,10 +490,9 @@ export async function runPipeline(
   logger.info(`\n========== Phase 5: Build & Validation ==========`);
 
   let buildValidation: BuildValidationResult | undefined;
-  const outputDir = `${config.workspaceDir}/${runId}/output`;
 
   const validationResult = await runBuildValidation(
-    outputDir,
+    decisionsOutputDir,
     config.playwrightValidationElements,
     logger,
     pw.navigate,
