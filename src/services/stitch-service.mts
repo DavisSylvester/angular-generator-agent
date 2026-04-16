@@ -15,6 +15,8 @@ export interface StitchPlaywrightCallbacks {
   screenshot(): Promise<string>;
   fill(ref: string, value: string): Promise<void>;
   click(ref: string): Promise<void>;
+  fillSelector(selector: string, value: string): Promise<void>;
+  clickSelector(selector: string): Promise<void>;
   waitFor(ms: number): Promise<void>;
 }
 
@@ -276,38 +278,83 @@ export class StitchService {
     await pw.navigate(`https://stitch.withgoogle.com/`);
     await pw.waitFor(5000);
 
-    // Take snapshot to find the prompt input
-    const snap = await pw.snapshot();
+    // Stitch renders its UI inside a cross-origin iframe, so ariaSnapshot()
+    // can't reach the form elements. Use direct CSS selectors via fillSelector/clickSelector
+    // which try the iframe first, then the main page.
 
-    // Try to find and fill the prompt textarea/input
-    const textareaRef = this.findPromptInput(snap);
-    if (textareaRef) {
-      this.logger.info(`Found prompt input, filling...`);
-      await pw.fill(textareaRef, prompt);
-      await pw.waitFor(1000);
+    // Step 1: Fill the prompt input (textarea or input inside the iframe)
+    const promptSelectors = [
+      `[contenteditable="true"]`,
+      `[role="textbox"]`,
+      `textarea`,
+      `input[type="text"]`,
+    ];
 
-      // Switch to Web mode
-      const webRadioRef = this.findWebRadio(snap);
-      if (webRadioRef) {
-        this.logger.info(`Switching to Web mode...`);
-        await pw.click(webRadioRef);
-        await pw.waitFor(500);
+    let filled = false;
+    for (const selector of promptSelectors) {
+      try {
+        this.logger.info(`Trying prompt selector: ${selector}`);
+        await pw.fillSelector(selector, prompt);
+        filled = true;
+        this.logger.info(`Filled prompt via selector: ${selector}`);
+        break;
+      } catch (error) {
+        this.logger.debug(`Selector ${selector} failed: ${error instanceof Error ? error.message : String(error)}`);
       }
+    }
 
-      // Find and click the generate/submit button
-      const updatedSnap = await pw.snapshot();
-      const submitRef = this.findSubmitButton(updatedSnap) ?? this.findSubmitButton(snap);
-      if (submitRef) {
-        this.logger.info(`Clicking Generate designs...`);
-        await pw.click(submitRef);
-        await pw.waitFor(25000); // Wait for generation (Stitch can take 15-25s)
-      }
-    } else {
-      // Fallback: navigate with prompt in URL
-      this.logger.info(`Could not find prompt input, using URL-based prompt...`);
+    if (!filled) {
+      // Last resort: navigate with prompt in URL
+      this.logger.warn(`Could not fill prompt via any selector — falling back to URL query string`);
       const encodedPrompt = encodeURIComponent(prompt.slice(0, 2000));
       await pw.navigate(`https://stitch.withgoogle.com/?prompt=${encodedPrompt}`);
       await pw.waitFor(5000);
+    } else {
+      await pw.waitFor(1000);
+
+      // Step 2: Select "Web" mode (radio or button)
+      const webSelectors = [
+        `label:has-text("Web")`,
+        `[role="radio"]:has-text("Web")`,
+        `button:has-text("Web")`,
+        `text=Web`,
+      ];
+      for (const selector of webSelectors) {
+        try {
+          await pw.clickSelector(selector);
+          this.logger.info(`Selected Web mode via: ${selector}`);
+          break;
+        } catch {
+          this.logger.debug(`Web mode selector ${selector} failed`);
+        }
+      }
+      await pw.waitFor(500);
+
+      // Step 3: Click Generate/Submit button
+      const submitSelectors = [
+        `button[aria-label="Generate designs"]`,
+        `button:has-text("Generate designs")`,
+        `button:has-text("Generate")`,
+        `button:has-text("Start designing")`,
+        `button:has-text("Create")`,
+        `button[type="submit"]`,
+      ];
+      let submitted = false;
+      for (const selector of submitSelectors) {
+        try {
+          await pw.clickSelector(selector);
+          this.logger.info(`Clicked submit via: ${selector}`);
+          submitted = true;
+          break;
+        } catch {
+          this.logger.debug(`Submit selector ${selector} failed`);
+        }
+      }
+
+      if (submitted) {
+        this.logger.info(`Waiting for Stitch generation (up to 25s)...`);
+        await pw.waitFor(25000);
+      }
     }
 
     // Capture the current URL (should now be the design project page)
@@ -334,22 +381,43 @@ export class StitchService {
       /textbox\s*\[active\]\s*\[ref=([^\]]+)\]/i,
       /textbox[^\n]*ref=([^\]\s]+)/i,
       /textarea[^\n]*ref=([^\]\s]+)/i,
+      /searchbox[^\n]*ref=([^\]\s]+)/i,
+      /combobox[^\n]*ref=([^\]\s]+)/i,
     ];
     for (const pattern of patterns) {
       const match = pattern.exec(snap);
-      if (match?.[1]) return match[1];
+      if (match?.[1]) {
+        this.logger.debug(`findPromptInput matched pattern: ${pattern.source} → ref=${match[1]}`);
+        return match[1];
+      }
     }
+    this.logger.warn(`findPromptInput: no input element found in snapshot`);
     return null;
   }
 
   private findWebRadio(snap: string): string | null {
     const match = /radio\s+"Web"\s*\[ref=([^\]]+)\]/i.exec(snap);
+    if (match?.[1]) this.logger.debug(`findWebRadio → ref=${match[1]}`);
+    else this.logger.debug(`findWebRadio: "Web" radio not found`);
     return match?.[1] ?? null;
   }
 
   private findSubmitButton(snap: string): string | null {
-    const match = /button\s+"Generate designs"\s*\[ref=([^\]]+)\]/i.exec(snap);
-    return match?.[1] ?? null;
+    // Try exact match first, then broader patterns
+    const patterns = [
+      /button\s+"Generate designs"\s*\[ref=([^\]]+)\]/i,
+      /button\s+"Generate"\s*\[ref=([^\]]+)\]/i,
+      /button[^\n]*Generate[^\n]*ref=([^\]\s]+)/i,
+    ];
+    for (const pattern of patterns) {
+      const match = pattern.exec(snap);
+      if (match?.[1]) {
+        this.logger.debug(`findSubmitButton matched: ${pattern.source} → ref=${match[1]}`);
+        return match[1];
+      }
+    }
+    this.logger.debug(`findSubmitButton: no Generate button found`);
+    return null;
   }
 
   private extractCurrentUrl(snap: string): string | null {

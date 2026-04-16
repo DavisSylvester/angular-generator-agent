@@ -141,6 +141,16 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
       await send("click", { ref });
     },
 
+    fillSelector: async (selector: string, value: string): Promise<void> => {
+      logger.debug(`[Browser] FillSelector: ${selector}`);
+      await send("fillSelector", { selector, value });
+    },
+
+    clickSelector: async (selector: string): Promise<void> => {
+      logger.debug(`[Browser] ClickSelector: ${selector}`);
+      await send("clickSelector", { selector });
+    },
+
     runCommand: async (
       cmd: string,
       args: string[],
