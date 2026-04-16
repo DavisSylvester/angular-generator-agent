@@ -10,12 +10,14 @@ import type { PlaywrightCallbacks } from "../orchestrator/pipeline.mts";
 export interface BrowserHandle {
 
   readonly callbacks: PlaywrightCallbacks;
+  saveSession(savePath: string): Promise<string>;
   close(): Promise<void>;
 }
 
 interface LaunchOptions {
   headless: boolean;
   logger: Logger;
+  sessionPath?: string;
 }
 
 // ── Bridge message types ────────────────────────────────────────────
@@ -31,13 +33,14 @@ interface BridgeResponse {
 
 export async function launchBrowser(options: LaunchOptions): Promise<BrowserHandle> {
 
-  const { headless, logger } = options;
+  const { headless, logger, sessionPath } = options;
 
   logger.info(`Launching browser bridge (headless: ${headless})...`);
 
   const bridgePath = join(import.meta.dir, "launch-server.cjs");
   const args = [bridgePath];
   if (headless) args.push("--headless");
+  if (sessionPath) args.push(`--session=${sessionPath}`);
 
   const proc: ChildProcess = spawn("node", args, {
     stdio: ["pipe", "pipe", "pipe"],
@@ -177,6 +180,10 @@ export async function launchBrowser(options: LaunchOptions): Promise<BrowserHand
 
   return {
     callbacks,
+    saveSession: async (savePath: string): Promise<string> => {
+      logger.info(`Saving browser session to ${savePath}...`);
+      return (await send("saveSession", { savePath })) ?? savePath;
+    },
     close: async (): Promise<void> => {
       logger.info(`Closing browser...`);
       try {

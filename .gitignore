@@ -38,6 +38,9 @@ Thumbs.db
 # Pipeline workspace output
 .workspace/
 
+# Saved browser sessions — contains auth cookies
+.auth/
+
 # LangGraph
 .langgraph_api/
 
