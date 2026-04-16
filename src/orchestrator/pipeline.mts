@@ -215,8 +215,11 @@ export async function runPipeline(
     if (scrapeResult.ok && scrapeResult.value.length > 0) {
       dribbbleDesigns = scrapeResult.value;
       logger.info(`Dribbble scraper returned ${dribbbleDesigns.length} designs`);
+      for (const d of dribbbleDesigns.slice(0, 5)) {
+        logger.info(`  → "${d.title}" by ${d.author} — ${d.url}`);
+      }
     } else {
-      logger.warn(`Dribbble scraper also failed`, {
+      logger.warn(`Dribbble scraper failed`, {
         error: scrapeResult.ok ? `zero results` : scrapeResult.error.message,
       });
     }
