@@ -13,5 +13,6 @@ export interface PipelineConfig {
   readonly stitchDesignCount: number;
   readonly dribbbleResultCount: number;
   readonly playwrightValidationElements: number;
+  readonly skipPlaywrightTest: boolean;
   readonly framework: SpaFramework;
 }
