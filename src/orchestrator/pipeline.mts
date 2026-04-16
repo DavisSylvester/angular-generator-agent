@@ -71,6 +71,8 @@ export interface PlaywrightCallbacks {
   runCommand(cmd: string, args: string[], cwd: string): Promise<{ exitCode: number; stdout: string; stderr: string }>;
   fill?(ref: string, value: string): Promise<void>;
   click?(ref: string): Promise<void>;
+  fillSelector?(selector: string, value: string): Promise<void>;
+  clickSelector?(selector: string): Promise<void>;
 }
 
 interface PipelineInput {
@@ -302,6 +304,8 @@ export async function runPipeline(
       screenshot: pw.screenshot,
       fill: pw.fill ?? (async () => { /* no-op — no browser wired */ }),
       click: pw.click ?? (async () => { /* no-op — no browser wired */ }),
+      fillSelector: pw.fillSelector ?? (async () => { /* no-op */ }),
+      clickSelector: pw.clickSelector ?? (async () => { /* no-op */ }),
       waitFor: async (ms) => new Promise((r) => setTimeout(r, ms)),
     },
   );

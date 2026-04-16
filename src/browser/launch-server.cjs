@@ -73,6 +73,34 @@ function transformSnapshot(raw) {
   return result.join("\n");
 }
 
+// ── Frame-aware target resolution ───────────────────────────────────
+//
+// Some sites (like Google Stitch) render their entire UI inside an iframe.
+// When the page-level snapshot only shows an iframe, we need to target the
+// frame content for snapshot/fill/click operations.
+
+async function getSnapshotTarget() {
+  // Check if the page-level snapshot is just an iframe shell
+  const pageSnap = await activePage.ariaSnapshot();
+  if (pageSnap.includes("iframe") && pageSnap.split("\n").filter(l => l.trim()).length <= 3) {
+    // Page is an iframe shell — find the content frame
+    const frames = activePage.frames();
+    for (const frame of frames) {
+      if (frame === activePage.mainFrame()) continue;
+      try {
+        const frameSnap = await frame.ariaSnapshot();
+        if (frameSnap && frameSnap.trim().length > 0) {
+          return { snap: frameSnap, frame };
+        }
+      } catch { /* frame may not be ready */ }
+    }
+  }
+  return { snap: pageSnap, frame: null };
+}
+
+/** @type {import("playwright").Frame | null} */
+let activeFrame = null;
+
 // ── Resolve ref to locator ──────────────────────────────────────────
 
 function resolveRef(ref) {
@@ -86,11 +114,13 @@ function resolveRef(ref) {
     menuitem: "menuitem", tab: "tab", option: "option",
   };
 
+  // Use the iframe frame if we detected one during the last snapshot
+  const target = activeFrame || activePage;
   const ariaRole = roleMap[entry.role.toLowerCase()] || entry.role.toLowerCase();
   if (entry.name) {
-    return activePage.getByRole(ariaRole, { name: entry.name });
+    return target.getByRole(ariaRole, { name: entry.name });
   }
-  return activePage.getByRole(ariaRole);
+  return target.getByRole(ariaRole);
 }
 
 // ── Command handlers ────────────────────────────────────────────────
@@ -106,7 +136,11 @@ const handlers = {
   },
 
   async snapshot() {
-    const raw = await activePage.ariaSnapshot();
+    const { snap: raw, frame } = await getSnapshotTarget();
+    activeFrame = frame; // Store so fill/click target the right frame
+    if (frame) {
+      process.stderr.write("[bridge] Snapshot: using iframe content frame\n");
+    }
     return transformSnapshot(raw);
   },
 
@@ -136,6 +170,67 @@ const handlers = {
     const locator = resolveRef(ref);
     await locator.click();
     return null;
+  },
+
+  // Frame-aware selector commands — try iframe first, then main page.
+  // Used for sites like Google Stitch where the UI lives in an iframe.
+
+  async fillSelector({ selector, value }) {
+    const iframe = activePage.frameLocator("iframe").first();
+
+    async function fillElement(loc) {
+      // contenteditable divs (like TipTap/ProseMirror) need click + type instead of fill
+      const editable = await loc.first().getAttribute("contenteditable").catch(() => null);
+      if (editable === "true") {
+        await loc.first().click();
+        await loc.first().selectText().catch(() => {});
+        await loc.first().pressSequentially(value, { delay: 5 });
+      } else {
+        await loc.first().fill(value);
+      }
+    }
+
+    try {
+      const loc = iframe.locator(selector);
+      if (await loc.count() > 0) {
+        await fillElement(loc);
+        process.stderr.write("[bridge] fillSelector: filled in iframe (" + selector + ")\n");
+        return null;
+      }
+    } catch { /* iframe locator failed */ }
+    const loc = activePage.locator(selector);
+    await fillElement(loc);
+    process.stderr.write("[bridge] fillSelector: filled in main page (" + selector + ")\n");
+    return null;
+  },
+
+  async clickSelector({ selector }) {
+    const iframe = activePage.frameLocator("iframe").first();
+    try {
+      const loc = iframe.locator(selector);
+      if (await loc.count() > 0) {
+        await loc.first().click();
+        process.stderr.write("[bridge] clickSelector: clicked in iframe\n");
+        return null;
+      }
+    } catch { /* iframe locator failed */ }
+    await activePage.locator(selector).first().click();
+    process.stderr.write("[bridge] clickSelector: clicked in main page\n");
+    return null;
+  },
+
+  // Evaluate JS inside the iframe to get DOM info ariaSnapshot can't reach
+  async frameEval({ js }) {
+    const frames = activePage.frames();
+    for (const frame of frames) {
+      if (frame === activePage.mainFrame()) continue;
+      try {
+        const result = await frame.evaluate(new Function("return (" + js + ")()"));
+        return result;
+      } catch { /* frame may be cross-origin or not ready */ }
+    }
+    // Fallback to main page
+    return await activePage.evaluate(new Function("return (" + js + ")()"));
   },
 
   async close() {
