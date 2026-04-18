@@ -1,0 +1,62 @@
+{
+  "reference": "reference.png",
+  "viewport": { "w": 1905, "h": 953 },
+  "note": "v3 bboxes — Col A widened after ActiveNodes crop showed AlarmsTile cut off. Columns: A(30-610), B(625-1100), C(1115-1875). AlarmStats height trimmed after v2 showed AlarmList card bleeding in.",
+  "regions": [
+    { "id": "page",                           "bbox": [0,    0,   1905, 953] },
+
+    { "id": "app-header",                     "bbox": [0,    0,   1905, 150] },
+    { "id": "app-header.brand",               "bbox": [30,   30,  360,  105] },
+    { "id": "app-header.nav",                 "bbox": [570,  55,  475,  50] },
+    { "id": "app-header.accent-rule",         "bbox": [30,   142, 1845, 4] },
+
+    { "id": "dashboard-page",                 "bbox": [0,    150, 1905, 803] },
+    { "id": "dashboard-page.tag",             "bbox": [30,   168, 180,  24] },
+
+    { "id": "model-render",                   "bbox": [30,   225, 580,  335] },
+    { "id": "model-render.header",            "bbox": [30,   225, 580,  28] },
+    { "id": "model-render.canvas",            "bbox": [30,   240, 580,  265] },
+    { "id": "model-render.overlay.tl",        "bbox": [40,   246, 195,  55] },
+    { "id": "model-render.overlay.tr",        "bbox": [400,  246, 205,  55] },
+    { "id": "model-render.footer",            "bbox": [30,   510, 580,  35] },
+    { "id": "model-render.footer.fps-chip",   "bbox": [30,   525, 130,  16] },
+
+    { "id": "health-monitor",                 "bbox": [625,  225, 475,  335] },
+    { "id": "health-monitor.header",          "bbox": [625,  225, 475,  28] },
+    { "id": "health-monitor.header.controls", "bbox": [970,  214, 130,  22] },
+    { "id": "health-monitor.chart",           "bbox": [625,  240, 475,  265], "mask": true },
+    { "id": "health-monitor.footer",          "bbox": [625,  510, 475,  35] },
+    { "id": "health-monitor.footer.stream-chip", "bbox": [625, 525, 475, 16] },
+
+    { "id": "runtime-metrics",                "bbox": [1115, 225, 760,  335] },
+    { "id": "runtime-metrics.header",         "bbox": [1115, 225, 760,  28] },
+    { "id": "runtime-metrics.bars",           "bbox": [1115, 244, 760,  40] },
+    { "id": "runtime-metrics.bars.load",      "bbox": [1115, 244, 760,  18] },
+    { "id": "runtime-metrics.bars.thre",      "bbox": [1115, 264, 760,  18] },
+    { "id": "runtime-metrics.grid",           "bbox": [1115, 292, 760,  253] },
+    { "id": "runtime-metrics.grid.col-a",     "bbox": [1115, 292, 375,  253] },
+    { "id": "runtime-metrics.grid.col-b",     "bbox": [1495, 292, 380,  253] },
+
+    { "id": "active-nodes",                   "bbox": [30,   570, 580,  358] },
+    { "id": "active-nodes.header",            "bbox": [30,   570, 580,  26] },
+    { "id": "active-nodes.status-row",        "bbox": [30,   600, 580,  22] },
+    { "id": "active-nodes.tiles",             "bbox": [30,   628, 580,  78] },
+    { "id": "active-nodes.tiles.nodes",       "bbox": [30,   628, 190,  78] },
+    { "id": "active-nodes.tiles.active",      "bbox": [222,  628, 190,  78] },
+    { "id": "active-nodes.tiles.alarms",      "bbox": [414,  628, 196,  78] },
+    { "id": "active-nodes.grid",              "bbox": [30,   712, 580,  175] },
+    { "id": "active-nodes.filters",           "bbox": [30,   892, 580,  35] },
+
+    { "id": "alarm-stats",                    "bbox": [625,  570, 475,  120] },
+    { "id": "alarm-stats.header",             "bbox": [625,  570, 475,  24] },
+    { "id": "alarm-stats.online",             "bbox": [625,  598, 158,   92] },
+    { "id": "alarm-stats.alarms",             "bbox": [783,  598, 158,   92] },
+    { "id": "alarm-stats.sla",                "bbox": [941,  598, 159,   92] },
+
+    { "id": "alarm-list",                     "bbox": [1115, 570, 760,  358] },
+    { "id": "alarm-list.header",              "bbox": [1115, 570, 760,  24] },
+    { "id": "alarm-list.card.0",              "bbox": [1115, 598, 760,  110], "prototype": true },
+    { "id": "alarm-list.card.1",              "bbox": [1115, 715, 760,  100] },
+    { "id": "alarm-list.card.2",              "bbox": [1115, 822, 760,  100] }
+  ]
+}
