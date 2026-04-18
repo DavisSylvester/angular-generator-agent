@@ -1,0 +1,664 @@
+{
+  "example": "full-stack-dashboard",
+  "generatedAt": "2026-04-18T20:36:58.011Z",
+  "entries": [
+    {
+      "id": "page",
+      "bbox": [
+        0,
+        0,
+        1905,
+        953
+      ],
+      "width": 1905,
+      "height": 953,
+      "sha256": "a0510033bd4504b737a7830500993d908f6b8127d63bc966300e6dc253ab7eec",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "app-header",
+      "bbox": [
+        0,
+        0,
+        1905,
+        150
+      ],
+      "width": 1905,
+      "height": 150,
+      "sha256": "4c3f909bf773aaa11b25a78d4d5eda4e21425dad73662fd5aa5272ffae16f1dd",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "app-header.brand",
+      "bbox": [
+        30,
+        30,
+        360,
+        105
+      ],
+      "width": 360,
+      "height": 105,
+      "sha256": "b94a83bc171b4bc07608d0d900ac7a7646df0a1b2dee2ac408d8728a0e64071e",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "app-header.nav",
+      "bbox": [
+        570,
+        55,
+        475,
+        50
+      ],
+      "width": 475,
+      "height": 50,
+      "sha256": "78a6663944cc51040b6f2baa3879129fa468ff21cf74acc211cf7ded55de1e63",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "app-header.accent-rule",
+      "bbox": [
+        30,
+        142,
+        1845,
+        4
+      ],
+      "width": 1845,
+      "height": 4,
+      "sha256": "9e9922e37c671f65c1c02231139171c19ce090316a30f0b09d8be93c1e2ddafa",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "dashboard-page",
+      "bbox": [
+        0,
+        150,
+        1905,
+        803
+      ],
+      "width": 1905,
+      "height": 803,
+      "sha256": "e9a47913c65fb310daf5bd86332be219937a8e849ad705bbe87341aaa8197103",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "dashboard-page.tag",
+      "bbox": [
+        30,
+        168,
+        180,
+        24
+      ],
+      "width": 180,
+      "height": 24,
+      "sha256": "b3713ea944c14136c5cbef1edadd689954c6affff4d278e84a996aa4542cce5d",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render",
+      "bbox": [
+        30,
+        225,
+        580,
+        335
+      ],
+      "width": 580,
+      "height": 335,
+      "sha256": "2d7a559628146f88cc4bf7f1180e7b4a6c144bb86d1b6bf42287218524d755cd",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render.header",
+      "bbox": [
+        30,
+        225,
+        580,
+        28
+      ],
+      "width": 580,
+      "height": 28,
+      "sha256": "d3594086a34f9a13c41e77a2b68380d15c95053e044263d3611070b7a1c789f5",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render.canvas",
+      "bbox": [
+        30,
+        240,
+        580,
+        265
+      ],
+      "width": 580,
+      "height": 265,
+      "sha256": "6355ce690920efca03c4d924c387b0add0c6faa657e12353869a3597ebfd46f8",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render.overlay.tl",
+      "bbox": [
+        40,
+        246,
+        195,
+        55
+      ],
+      "width": 195,
+      "height": 55,
+      "sha256": "ceaf5c698dbaffa98d960b5c1c5ce31afcc1091567d48eca463a950a0176441c",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render.overlay.tr",
+      "bbox": [
+        400,
+        246,
+        205,
+        55
+      ],
+      "width": 205,
+      "height": 55,
+      "sha256": "3e6bfb44299a584be3314992446af6ba943c9d460bef89c59e8d10ad46a01441",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render.footer",
+      "bbox": [
+        30,
+        510,
+        580,
+        35
+      ],
+      "width": 580,
+      "height": 35,
+      "sha256": "d6ae7dbbe14f346ae1e9bb95d2cd5937feacf80a30415106a2368597b9a92c72",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "model-render.footer.fps-chip",
+      "bbox": [
+        30,
+        525,
+        130,
+        16
+      ],
+      "width": 130,
+      "height": 16,
+      "sha256": "5fb6192cd9f3532abd78727d84aa7e0b0b21f542f716f22b6366023e2b7f29da",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "health-monitor",
+      "bbox": [
+        625,
+        225,
+        475,
+        335
+      ],
+      "width": 475,
+      "height": 335,
+      "sha256": "e669d3d20e98301eab68b1d54530e378c5bf7afc4f2f59665fdf71a06981062e",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "health-monitor.header",
+      "bbox": [
+        625,
+        225,
+        475,
+        28
+      ],
+      "width": 475,
+      "height": 28,
+      "sha256": "876ba10a081a8480596a2b6b2868d48fcd904f45d1a12e0f1125200dacf84b49",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "health-monitor.header.controls",
+      "bbox": [
+        970,
+        214,
+        130,
+        22
+      ],
+      "width": 130,
+      "height": 22,
+      "sha256": "8b16b6dfd06a90c22afae6850cf02030088f0fe2e8357082fc840ed86fcde994",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "health-monitor.chart",
+      "bbox": [
+        625,
+        240,
+        475,
+        265
+      ],
+      "width": 475,
+      "height": 265,
+      "sha256": "24727f5f0d2c92d2adc201f9fb5225ba91af7bccbf3b9b31e5d5cefe0de8283b",
+      "mask": true,
+      "prototype": false
+    },
+    {
+      "id": "health-monitor.footer",
+      "bbox": [
+        625,
+        510,
+        475,
+        35
+      ],
+      "width": 475,
+      "height": 35,
+      "sha256": "5bbdb91903a9c8f8dc9143363efdc650c7966a96c58bc374c5ddbc430af60095",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "health-monitor.footer.stream-chip",
+      "bbox": [
+        625,
+        525,
+        475,
+        16
+      ],
+      "width": 475,
+      "height": 16,
+      "sha256": "497f6fe8e439c29cd981bb5a529c8a797792edbefd4cefb34be0cadbc3c4b8cf",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics",
+      "bbox": [
+        1115,
+        225,
+        760,
+        335
+      ],
+      "width": 760,
+      "height": 335,
+      "sha256": "8c9227129d8d645e74f0e6c0fbf13258db45df27087fde2f7cde366067634b02",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.header",
+      "bbox": [
+        1115,
+        225,
+        760,
+        28
+      ],
+      "width": 760,
+      "height": 28,
+      "sha256": "acf09b89b506368bcd75c90b50a1d088d9ba7919fb8b076d28d64f264a0fbd11",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.bars",
+      "bbox": [
+        1115,
+        244,
+        760,
+        40
+      ],
+      "width": 760,
+      "height": 40,
+      "sha256": "4c54285d96ad1598570c2f2568cbb70c403414d9df31e95d07e20ed0c64b0332",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.bars.load",
+      "bbox": [
+        1115,
+        244,
+        760,
+        18
+      ],
+      "width": 760,
+      "height": 18,
+      "sha256": "6f8353ac80b7a959b2d39b21638445d5554c4a3f34583c1ae6ab70cc7be8c9c5",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.bars.thre",
+      "bbox": [
+        1115,
+        264,
+        760,
+        18
+      ],
+      "width": 760,
+      "height": 18,
+      "sha256": "9d7c8933ea72a015e05b504951773c85f1763198391aaecf1a75cce4e1d223c2",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.grid",
+      "bbox": [
+        1115,
+        292,
+        760,
+        253
+      ],
+      "width": 760,
+      "height": 253,
+      "sha256": "12bb3334756ff4dbb83945c655c109dd493a0d9a553e42679d434cf2a9417979",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.grid.col-a",
+      "bbox": [
+        1115,
+        292,
+        375,
+        253
+      ],
+      "width": 375,
+      "height": 253,
+      "sha256": "7933f1aa28588df808356901c012fdab7ed87f7e7c53a9c080a815081eaa3f8c",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "runtime-metrics.grid.col-b",
+      "bbox": [
+        1495,
+        292,
+        380,
+        253
+      ],
+      "width": 380,
+      "height": 253,
+      "sha256": "454d610b7ebec8dcddc61d590eeb21590858cc4a175bcad4f227bb6aa9cfc1ed",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes",
+      "bbox": [
+        30,
+        570,
+        580,
+        358
+      ],
+      "width": 580,
+      "height": 358,
+      "sha256": "277d487163c44c7c9c16a7e2039edcacb72f5d21789f8f8c92d245cf1cc62d67",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.header",
+      "bbox": [
+        30,
+        570,
+        580,
+        26
+      ],
+      "width": 580,
+      "height": 26,
+      "sha256": "553a82ef10a9b728edcf0f773cb51056dc79e2e5a4093f51f9de7d19e69325e7",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.status-row",
+      "bbox": [
+        30,
+        600,
+        580,
+        22
+      ],
+      "width": 580,
+      "height": 22,
+      "sha256": "94d317497a4dd13d2199075a40b84891cd007186842ee195ad006aa9b05f6afb",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.tiles",
+      "bbox": [
+        30,
+        628,
+        580,
+        78
+      ],
+      "width": 580,
+      "height": 78,
+      "sha256": "eac5ff4dfb62d63589e3399f088e31e60cbce94b5a9433826ab730ffe0de0122",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.tiles.nodes",
+      "bbox": [
+        30,
+        628,
+        190,
+        78
+      ],
+      "width": 190,
+      "height": 78,
+      "sha256": "9aa1b9d75142bc7dee39866fbc89fecc3ebbef5a2e628e998882415e71372972",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.tiles.active",
+      "bbox": [
+        222,
+        628,
+        190,
+        78
+      ],
+      "width": 190,
+      "height": 78,
+      "sha256": "8bd854b363b05c171a65ef0d91923859944d05532e1a570324aff6adde619b47",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.tiles.alarms",
+      "bbox": [
+        414,
+        628,
+        196,
+        78
+      ],
+      "width": 196,
+      "height": 78,
+      "sha256": "d363efd0458383ae99981622fdfd25b7980f3d6367fc952ca002a0052e4927d1",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.grid",
+      "bbox": [
+        30,
+        712,
+        580,
+        175
+      ],
+      "width": 580,
+      "height": 175,
+      "sha256": "858cf905eeca4ca59be70ec1a13d10164888036e83a05c1674734f26ec2f2650",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "active-nodes.filters",
+      "bbox": [
+        30,
+        892,
+        580,
+        35
+      ],
+      "width": 580,
+      "height": 35,
+      "sha256": "dc57661fb980b8d93133e7684c0f1b509c995016b8f9f1ea1e11bf0dcd2ce12e",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-stats",
+      "bbox": [
+        625,
+        570,
+        475,
+        120
+      ],
+      "width": 475,
+      "height": 120,
+      "sha256": "ea6ed12d949054b113f4e55364a06a2df840c31d3c189feb481502fef44c8232",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-stats.header",
+      "bbox": [
+        625,
+        570,
+        475,
+        24
+      ],
+      "width": 475,
+      "height": 24,
+      "sha256": "d1bc94140c879fbd83b1c76019fe2fa9846f530c1949c4783ef5ddb84db94362",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-stats.online",
+      "bbox": [
+        625,
+        598,
+        158,
+        92
+      ],
+      "width": 158,
+      "height": 92,
+      "sha256": "ab45815f25881f9dbfa4bbeadfc651c48847494665b6b69c1a0f90c0131d61a4",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-stats.alarms",
+      "bbox": [
+        783,
+        598,
+        158,
+        92
+      ],
+      "width": 158,
+      "height": 92,
+      "sha256": "8fbee1158bbfe10af6cd8ea8c2b3b567c1ee17a71908ff37f6cf6fb586502c62",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-stats.sla",
+      "bbox": [
+        941,
+        598,
+        159,
+        92
+      ],
+      "width": 159,
+      "height": 92,
+      "sha256": "28a2011b847ba3cdc7b84e7d92ae36affea4d203071affe89dd34d30c4c17219",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-list",
+      "bbox": [
+        1115,
+        570,
+        760,
+        358
+      ],
+      "width": 760,
+      "height": 358,
+      "sha256": "2b01a5ff1fa728a1542b2788a9701fcace38eb9ef374628a3ea4d063c82786b7",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-list.header",
+      "bbox": [
+        1115,
+        570,
+        760,
+        24
+      ],
+      "width": 760,
+      "height": 24,
+      "sha256": "b5d89173df376fd31a7da333bfa4f6f71df7c5da9297d78a21ed1bd7292b450d",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-list.card.0",
+      "bbox": [
+        1115,
+        598,
+        760,
+        110
+      ],
+      "width": 760,
+      "height": 110,
+      "sha256": "b6f76c7b6de2a7ed09a543efdb94ce475640a8be94d0eb00f3a9a3d2ce9583ef",
+      "mask": false,
+      "prototype": true
+    },
+    {
+      "id": "alarm-list.card.1",
+      "bbox": [
+        1115,
+        715,
+        760,
+        100
+      ],
+      "width": 760,
+      "height": 100,
+      "sha256": "9fb802f0f01354989fc614a56efa8795d7fc3736cb0c6cfcf619be45df9a46e4",
+      "mask": false,
+      "prototype": false
+    },
+    {
+      "id": "alarm-list.card.2",
+      "bbox": [
+        1115,
+        822,
+        760,
+        100
+      ],
+      "width": 760,
+      "height": 100,
+      "sha256": "45a85db2f47cb5628caa866e6165b8b4312abd97f10511d16582bd2f7b60d7ec",
+      "mask": false,
+      "prototype": false
+    }
+  ]
+}
