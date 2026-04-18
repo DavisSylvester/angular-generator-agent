@@ -1,0 +1,11 @@
+:host {
+
+  display: block;
+  min-height: 0;
+}
+
+:host-context(.pm-panel--variant-inset) {
+
+  background: var(--bg-2);
+  padding: var(--sp-3);
+}

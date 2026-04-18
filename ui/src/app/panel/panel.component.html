@@ -1,0 +1,14 @@
+@if (showLabel()) {
+  <span class="pm-panel__label">{{ label() }}</span>
+}
+
+<ng-content select="pm-header" />
+<ng-content select="pm-body" />
+<ng-content select="pm-footer" />
+
+@if (showFrame()) {
+  <span class="pm-panel__tick pm-panel__tick--tl" aria-hidden="true"></span>
+  <span class="pm-panel__tick pm-panel__tick--tr" aria-hidden="true"></span>
+  <span class="pm-panel__tick pm-panel__tick--bl" aria-hidden="true"></span>
+  <span class="pm-panel__tick pm-panel__tick--br" aria-hidden="true"></span>
+}

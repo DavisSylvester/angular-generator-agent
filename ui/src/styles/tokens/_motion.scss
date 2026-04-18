@@ -1,0 +1,19 @@
+// Motion token contract.
+
+:root {
+
+  --dur-fast: 120ms;
+  --dur-med:  240ms;
+  --dur-slow: 600ms;
+  --easing: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  :root {
+
+    --dur-fast: 0ms;
+    --dur-med:  0ms;
+    --dur-slow: 0ms;
+  }
+}

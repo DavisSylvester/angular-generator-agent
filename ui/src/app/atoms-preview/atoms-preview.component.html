@@ -1,0 +1,67 @@
+<section class="preview">
+  <h1 class="preview__title">PANEL MODEL — ATOMS PREVIEW</h1>
+
+  <!-- Canonical decomposition case: AlarmStats → Online/Alarms/SLA -->
+  <pm-panel label="ALARM STATS" visualId="alarm-stats">
+    <pm-header>
+      <div class="alarm-stats__cols">
+        <span class="pm-label">ONLINE</span>
+        <span class="pm-label">ALARMS</span>
+        <span class="pm-label">SLA</span>
+      </div>
+    </pm-header>
+    <pm-body>
+      <div class="alarm-stats__grid">
+        <pm-panel variant="borderless" status="ok" visualId="alarm-stats.online">
+          <pm-body>
+            <pm-stat [value]="102" [denominator]="109" label="ACTIVE / ALL" status="ok" />
+          </pm-body>
+          <pm-footer [accent]="true" />
+        </pm-panel>
+
+        <pm-panel variant="borderless" status="warn" visualId="alarm-stats.alarms">
+          <pm-body>
+            <pm-stat [value]="14" [denominator]="23" label="12H / 24H" status="warn" />
+          </pm-body>
+          <pm-footer [accent]="true" />
+        </pm-panel>
+
+        <pm-panel variant="borderless" status="ok" visualId="alarm-stats.sla">
+          <pm-body>
+            <pm-stat [value]="99.4" [denominator]="100" label="UPTIME / —" status="ok" />
+          </pm-body>
+          <pm-footer [accent]="true" />
+        </pm-panel>
+      </div>
+    </pm-body>
+  </pm-panel>
+
+  <!-- Variant showcase -->
+  <div class="variants">
+    <pm-panel label="DEFAULT" status="idle">
+      <pm-body>
+        <p class="pm-prose">Default Panel — Frame with corner ticks, hairline border, label strip.</p>
+      </pm-body>
+    </pm-panel>
+
+    <pm-panel label="INSET" variant="inset" status="idle">
+      <pm-body>
+        <p class="pm-prose">Inset variant — sunken background for chart surfaces.</p>
+      </pm-body>
+    </pm-panel>
+
+    <pm-panel variant="borderless" status="idle">
+      <pm-body>
+        <p class="pm-prose">Borderless — logical grouping only, no chrome.</p>
+      </pm-body>
+    </pm-panel>
+  </div>
+
+  <!-- Status showcase -->
+  <div class="statuses">
+    <pm-panel label="OK" status="ok"><pm-body><pm-stat [value]="42" unit="%" label="HEALTH" status="ok" /></pm-body></pm-panel>
+    <pm-panel label="WARN" status="warn"><pm-body><pm-stat [value]="78" unit="°C" label="TEMP" status="warn" /></pm-body></pm-panel>
+    <pm-panel label="CRIT" status="crit"><pm-body><pm-stat [value]="96" unit="%" label="LOAD" status="crit" /></pm-body></pm-panel>
+    <pm-panel label="LIVE" status="live"><pm-body><pm-stat [value]="3.14" unit="hz" label="RATE" /></pm-body></pm-panel>
+  </div>
+</section>

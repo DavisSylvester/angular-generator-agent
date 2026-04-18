@@ -1,0 +1,39 @@
+:host {
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  border-bottom: var(--bw-hair) dotted var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  color: var(--fg-0);
+}
+
+:host ::ng-deep .pm-header__title {
+
+  font-size: var(--t-md);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+:host ::ng-deep .pm-header__meta {
+
+  display: flex;
+  gap: var(--sp-4);
+  font-size: var(--t-xs);
+  color: var(--fg-1);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+:host ::ng-deep .pm-header__controls {
+
+  display: flex;
+  gap: var(--sp-2);
+  align-items: center;
+}

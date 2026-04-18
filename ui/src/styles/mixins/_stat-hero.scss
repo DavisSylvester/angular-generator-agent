@@ -1,0 +1,33 @@
+// Stat hero mixin — XXL numeric with optional denominator and unit.
+
+@mixin pm-stat-hero {
+
+  font-family: var(--font-mono);
+  font-size: var(--t-xxl);
+  line-height: var(--lh-tight);
+  letter-spacing: -0.02em;
+  color: var(--fg-0);
+
+  .pm-stat__value      { color: var(--fg-0); }
+  .pm-stat__sep        { color: var(--fg-2); margin: 0 0.2em; font-weight: 300; }
+  .pm-stat__denom      { color: var(--fg-2); }
+  .pm-stat__unit {
+    font-size: var(--t-md);
+    color: var(--fg-2);
+    margin-left: var(--sp-1);
+    font-weight: 400;
+  }
+  .pm-stat__label {
+    display: block;
+    margin-top: var(--sp-2);
+    font-size: var(--t-xs);
+    color: var(--fg-1);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  &.pm-stat--ok   .pm-stat__value { color: var(--ok); }
+  &.pm-stat--warn .pm-stat__value { color: var(--warn); }
+  &.pm-stat--crit .pm-stat__value { color: var(--crit); }
+}

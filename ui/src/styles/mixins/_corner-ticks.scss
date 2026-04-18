@@ -1,0 +1,44 @@
+// Corner ticks mixin — four 6px L-brackets at each corner of a Frame.
+// Host element must be position: relative. Ticks render via ::before/::after
+// on four absolutely-positioned pseudo-hosts. Callers provide those hosts
+// with class names matching .pm-panel__tick--{tl,tr,bl,br}.
+
+@mixin pm-corner-ticks($size: 6px, $color: var(--fg-accent), $thickness: var(--bw-hair)) {
+
+  position: relative;
+
+  .pm-panel__tick {
+    position: absolute;
+    width: $size;
+    height: $size;
+    pointer-events: none;
+  }
+
+  .pm-panel__tick--tl {
+    top: 0;
+    left: 0;
+    border-top: $thickness solid $color;
+    border-left: $thickness solid $color;
+  }
+
+  .pm-panel__tick--tr {
+    top: 0;
+    right: 0;
+    border-top: $thickness solid $color;
+    border-right: $thickness solid $color;
+  }
+
+  .pm-panel__tick--bl {
+    bottom: 0;
+    left: 0;
+    border-bottom: $thickness solid $color;
+    border-left: $thickness solid $color;
+  }
+
+  .pm-panel__tick--br {
+    bottom: 0;
+    right: 0;
+    border-bottom: $thickness solid $color;
+    border-right: $thickness solid $color;
+  }
+}

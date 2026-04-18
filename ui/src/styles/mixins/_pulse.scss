@@ -1,0 +1,18 @@
+// Pulse mixin — infinite opacity pulse for live indicators.
+// Disabled automatically under prefers-reduced-motion via token duration 0ms.
+
+@keyframes pm-pulse {
+
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+@mixin pm-pulse($duration: 1.2s) {
+
+  animation: pm-pulse $duration ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+  }
+}

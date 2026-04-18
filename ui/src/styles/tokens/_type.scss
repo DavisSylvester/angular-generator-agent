@@ -1,0 +1,18 @@
+// Typography token contract — 6-step scale.
+
+:root {
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Monaco, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --t-xs:  10px;
+  --t-sm:  11px;
+  --t-md:  13px;
+  --t-lg:  16px;
+  --t-xl:  22px;
+  --t-xxl: 44px;
+
+  --tracking-label: 0.08em;
+  --lh-tight: 1.15;
+  --lh-normal: 1.45;
+}

@@ -50,3 +50,12 @@ bun.lockb
 # Temporary files
 tmp/
 temp/
+
+# Angular UI workspace
+ui/node_modules/
+ui/dist/
+ui/.angular/
+ui/out-tsc/
+
+# Visual validation artifacts (regenerated per run)
+visual-actual/

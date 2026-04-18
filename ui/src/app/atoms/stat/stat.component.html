@@ -1,0 +1,11 @@
+<span class="pm-stat__value">{{ formattedValue() }}</span>
+@if (formattedDenominator() !== null) {
+  <span class="pm-stat__sep">/</span>
+  <span class="pm-stat__denom">{{ formattedDenominator() }}</span>
+}
+@if (unit()) {
+  <span class="pm-stat__unit">{{ unit() }}</span>
+}
+@if (label()) {
+  <span class="pm-stat__label">{{ label() }}</span>
+}
