@@ -1,0 +1,34 @@
+// Entry — loads token contracts, then the active theme, then base styles.
+// Components use `@use` to pull in mixins; they never @use tokens directly.
+
+@use 'tokens';
+@use 'themes/dark';
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/a11y';
+
+// Default theme activation — may be swapped to data-theme="light" when a
+// LIGHT theme is added.
+html {
+
+  color-scheme: dark;
+}
+
+html:not([data-theme]) {
+
+  // fallback when no attribute is set — behaves as dark.
+  --bg-0: #0A0E12;
+  --bg-1: #0F1419;
+  --bg-2: #0B0F14;
+  --line: #1E2A34;
+  --line-dim: #16202A;
+  --fg-0: #C9D4DE;
+  --fg-1: #8A98A6;
+  --fg-2: #5B6876;
+  --fg-accent: #6EE7F9;
+  --ok: #2DD4BF;
+  --warn: #F5A524;
+  --crit: #EF4444;
+  --live: #FF3355;
+  --info: #60A5FA;
+}

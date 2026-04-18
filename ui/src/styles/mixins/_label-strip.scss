@@ -1,0 +1,22 @@
+// Label strip mixin — uppercase accent tag at the Frame top-left.
+// Host positions the strip; text comes from the [label] input on PanelComponent
+// and is written into .pm-panel__label.
+
+@mixin pm-label-strip {
+
+  .pm-panel__label {
+    position: absolute;
+    top: 0;
+    left: var(--sp-4);
+    transform: translateY(-50%);
+    padding: 2px var(--sp-2);
+    background: var(--fg-accent);
+    color: var(--bg-0);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    line-height: 1;
+    z-index: 2;
+  }
+}

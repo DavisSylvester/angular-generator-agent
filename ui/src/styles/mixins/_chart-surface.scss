@@ -1,0 +1,11 @@
+// Chart-surface mixin — inset background, dotted gridlines, axis color.
+
+@mixin pm-chart-surface {
+
+  background: var(--bg-2);
+  padding: var(--sp-3);
+  border-radius: var(--r-1);
+  color: var(--fg-1);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+}

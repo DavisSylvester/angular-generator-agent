@@ -1,0 +1,34 @@
+// Color token contract — see docs/ui-plan/00-plan.md §2.1
+// The pattern defines NAMES and MEANINGS. Concrete values live in themes/_<name>.scss.
+// Components read these via var(--*); never hard-code hex in a component.
+
+:root {
+
+  // base surface
+  --bg-0: initial;        // page background
+  --bg-1: initial;        // panel background
+  --bg-2: initial;        // inset / body background
+  --line: initial;        // hairline border
+  --line-dim: initial;    // secondary / inactive border
+
+  // text
+  --fg-0: initial;        // primary text
+  --fg-1: initial;        // label / secondary text
+  --fg-2: initial;        // muted / tertiary text
+  --fg-accent: initial;   // brand / focus / active
+
+  // state
+  --ok: initial;
+  --warn: initial;
+  --crit: initial;
+  --live: initial;        // live-feed pulse color
+  --info: initial;
+
+  // chart series (deterministic palette)
+  --series-1: initial;
+  --series-2: initial;
+  --series-3: initial;
+  --series-4: initial;
+  --series-5: initial;
+  --series-6: initial;
+}

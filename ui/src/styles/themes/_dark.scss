@@ -1,0 +1,34 @@
+// DARK theme — concrete values tuned against
+// docs/ui-plan/examples/full-stack-dashboard/reference.png.
+// Activated by `data-theme="dark"` on <html>.
+
+[data-theme='dark'] {
+
+  // base
+  --bg-0: #0A0E12;
+  --bg-1: #0F1419;
+  --bg-2: #0B0F14;
+  --line: #1E2A34;
+  --line-dim: #16202A;
+
+  // text
+  --fg-0: #C9D4DE;
+  --fg-1: #8A98A6;
+  --fg-2: #5B6876;
+  --fg-accent: #6EE7F9;
+
+  // state
+  --ok:   #2DD4BF;
+  --warn: #F5A524;
+  --crit: #EF4444;
+  --live: #FF3355;
+  --info: #60A5FA;
+
+  // chart series
+  --series-1: #6EE7F9;
+  --series-2: #F5A524;
+  --series-3: #2DD4BF;
+  --series-4: #A78BFA;
+  --series-5: #F472B6;
+  --series-6: #FDE047;
+}

@@ -1,0 +1,33 @@
+// Key-value row layout — label left, value right, optional unit trailing.
+
+@mixin pm-kv-row {
+
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: 2px 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+
+  .pm-kv__k {
+    color: var(--fg-1);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .pm-kv__v {
+    color: var(--fg-0);
+    text-align: right;
+  }
+
+  .pm-kv__u {
+    color: var(--fg-2);
+    text-align: right;
+    min-width: 3ch;
+  }
+
+  &.pm-kv--warn .pm-kv__v { color: var(--warn); }
+  &.pm-kv--crit .pm-kv__v { color: var(--crit); }
+  &.pm-kv--accent .pm-kv__v { color: var(--fg-accent); }
+}

@@ -1,0 +1,7 @@
+@use '../../../styles/mixins/stat-hero' as sh;
+
+:host {
+
+  display: inline-block;
+  @include sh.pm-stat-hero;
+}

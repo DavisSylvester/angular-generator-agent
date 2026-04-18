@@ -1,0 +1,31 @@
+.pm-mono {
+
+  font-family: var(--font-mono);
+}
+
+.pm-label {
+
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+
+.pm-title {
+
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-0);
+}
+
+.pm-prose {
+
+  font-family: var(--font-sans);
+  font-size: var(--t-md);
+  line-height: var(--lh-normal);
+  color: var(--fg-1);
+}
