@@ -5,9 +5,12 @@
 
   display: block;
   position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background: var(--bg-1);
   color: var(--fg-0);
-  padding: var(--sp-4);
+  padding: var(--sp-2) var(--sp-3);
   border: var(--bw-hair) solid var(--line);
   border-radius: var(--r-1);
 
@@ -29,7 +32,7 @@
 
 :host(.pm-panel--density-compact) {
 
-  padding: var(--sp-2) var(--sp-3);
+  padding: var(--sp-2) 0;
 }
 
 :host(.pm-panel--status-warn) {

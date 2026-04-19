@@ -4,6 +4,7 @@
 :host {
 
   display: block;
+  min-width: 0;
   font-family: var(--font-mono);
   color: var(--fg-0);
   text-align: left;
@@ -14,8 +15,8 @@
   display: grid;
   grid-template-columns: auto auto auto 1fr;
   align-items: baseline;
-  column-gap: var(--sp-2);
-  row-gap: var(--sp-1);
+  column-gap: var(--sp-1);
+  row-gap: var(--sp-3);
   line-height: var(--lh-tight);
 }
 
@@ -24,26 +25,30 @@
   grid-template-columns: auto auto;
 }
 
+// hero numeral tuned to match full-stack-dashboard reference (~34px)
 .pm-stat__value {
 
-  font-size: var(--t-xxl);
-  font-weight: 500;
+  font-size: 33px;
+  font-weight: 300;
   letter-spacing: -0.02em;
   color: var(--fg-0);
+  line-height: 1.15;
 }
 
 .pm-stat__sep {
 
-  font-size: var(--t-xxl);
-  font-weight: 300;
+  font-size: 33px;
+  font-weight: 200;
   color: var(--fg-2);
+  line-height: 1.15;
 }
 
 .pm-stat__denom {
 
-  font-size: var(--t-xxl);
-  font-weight: 400;
+  font-size: 33px;
+  font-weight: 300;
   color: var(--fg-2);
+  line-height: 1.15;
 }
 
 .pm-stat__unit {

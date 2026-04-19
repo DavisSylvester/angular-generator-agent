@@ -40,8 +40,18 @@
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-3);
-  padding-top: var(--sp-2);
+  grid-auto-rows: 91px;
+  gap: 0;
+  padding-top: var(--sp-1);
+}
+
+.alarm-stats__grid > pm-panel {
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 .variants,

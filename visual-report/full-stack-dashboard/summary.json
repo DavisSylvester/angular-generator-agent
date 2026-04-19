@@ -10,11 +10,11 @@
       ],
       "actualSize": [
         476,
-        169
+        138
       ],
-      "mismatchedPixels": 7536,
-      "mismatchRatio": 0.13221052631578947,
-      "pass": false,
+      "mismatchedPixels": 3889,
+      "mismatchRatio": 0.0682280701754386,
+      "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
@@ -24,12 +24,12 @@
         92
       ],
       "actualSize": [
-        192,
-        87
+        159,
+        92
       ],
-      "mismatchedPixels": 2828,
-      "mismatchRatio": 0.19455145844799118,
-      "pass": false,
+      "mismatchedPixels": 1221,
+      "mismatchRatio": 0.08399834892680243,
+      "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
@@ -39,13 +39,13 @@
         92
       ],
       "actualSize": [
-        144,
-        87
+        158,
+        92
       ],
-      "mismatchedPixels": 2365,
-      "mismatchRatio": 0.16269950467804073,
-      "pass": false,
-      "reason": "size-mismatch-resized"
+      "mismatchedPixels": 975,
+      "mismatchRatio": 0.06707484865162355,
+      "pass": true,
+      "reason": "identical-size"
     },
     {
       "id": "alarm-stats.sla",
@@ -54,13 +54,13 @@
         92
       ],
       "actualSize": [
-        215,
-        87
+        159,
+        92
       ],
-      "mismatchedPixels": 2772,
-      "mismatchRatio": 0.18949958982772763,
-      "pass": false,
-      "reason": "size-mismatch-resized"
+      "mismatchedPixels": 1178,
+      "mismatchRatio": 0.080530489472245,
+      "pass": true,
+      "reason": "identical-size"
     }
   ]
 }
