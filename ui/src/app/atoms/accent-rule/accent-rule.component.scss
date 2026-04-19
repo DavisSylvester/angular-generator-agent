@@ -1,0 +1,19 @@
+:host {
+
+  display: block;
+  height: var(--bw-accent);
+  width: 100%;
+  background: var(--fg-accent);
+}
+
+:host.pm-rule--ok   { background: var(--ok); }
+:host.pm-rule--warn { background: var(--warn); }
+:host.pm-rule--crit { background: var(--crit); }
+:host.pm-rule--live { background: var(--live); }
+:host.pm-rule--idle { background: var(--fg-accent); }
+
+:host.pm-rule--gradient {
+
+  height: 4px;
+  background: linear-gradient(90deg, transparent 0%, var(--fg-accent) 20%, var(--fg-accent) 80%, transparent 100%);
+}

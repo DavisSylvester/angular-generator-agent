@@ -1,0 +1,12 @@
+:host {
+
+  display: inline-block;
+  padding: 2px var(--sp-2);
+  background: var(--fg-accent);
+  color: var(--bg-0);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  line-height: 1.3;
+}

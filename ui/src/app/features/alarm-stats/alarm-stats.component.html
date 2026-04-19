@@ -1,0 +1,34 @@
+<!-- KB §1, §2 — Stat labelLeft/labelRight + 4-segment ActivityIndicator -->
+<pm-panel visualId="alarm-stats" density="compact">
+  <pm-header>
+    <div class="alarm-stats__cols">
+      <span class="pm-label">ONLINE</span>
+      <span class="pm-label">ALARMS</span>
+      <span class="pm-label">SLA</span>
+    </div>
+  </pm-header>
+  <pm-body>
+    <div class="alarm-stats__grid">
+      <pm-panel variant="borderless" status="ok" visualId="alarm-stats.online">
+        <pm-body>
+          <pm-stat [value]="102" [denominator]="109" labelLeft="ACTIVE" labelRight="ALL" status="ok" />
+          <pm-indicator [total]="4" [active]="2" status="ok" />
+        </pm-body>
+      </pm-panel>
+
+      <pm-panel variant="borderless" status="warn" visualId="alarm-stats.alarms">
+        <pm-body>
+          <pm-stat [value]="14" [denominator]="23" labelLeft="12H" labelRight="24H" status="warn" />
+          <pm-indicator [total]="4" [active]="2" status="warn" />
+        </pm-body>
+      </pm-panel>
+
+      <pm-panel variant="borderless" status="ok" visualId="alarm-stats.sla">
+        <pm-body>
+          <pm-stat [value]="99.4" [denominator]="100" labelLeft="UPTIME" labelRight="—" status="ok" />
+          <pm-indicator [total]="4" [active]="2" status="ok" />
+        </pm-body>
+      </pm-panel>
+    </div>
+  </pm-body>
+</pm-panel>

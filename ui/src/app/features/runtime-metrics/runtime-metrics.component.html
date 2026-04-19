@@ -1,0 +1,31 @@
+<pm-panel label="RUNTIME METRICS" visualId="runtime-metrics" density="compact">
+  <pm-header>
+    <h3 class="pm-header__title">RUNTIME METRICS</h3>
+  </pm-header>
+  <pm-body>
+    <div class="rm__bars" data-visual-id="runtime-metrics.bars">
+      <div class="rm__bar-row" data-visual-id="runtime-metrics.bars.load">
+        <span class="rm__dot rm__dot--a"></span>
+        <span class="rm__bar-label">IDX_21321_LOAD</span>
+        <pm-bar [value]="100" [max]="100" color="idle" />
+      </div>
+      <div class="rm__bar-row" data-visual-id="runtime-metrics.bars.thre">
+        <span class="rm__dot rm__dot--b"></span>
+        <span class="rm__bar-label">IDX_75322_THRE</span>
+        <pm-bar [value]="30" [max]="100" color="warn" />
+      </div>
+    </div>
+    <div class="rm__grid" data-visual-id="runtime-metrics.grid">
+      <div class="rm__col" data-visual-id="runtime-metrics.grid.col-a">
+        @for (r of colA; track r.k) {
+          <pm-kv [k]="r.k" [v]="r.v" [unit]="r.unit" [emphasis]="r.emphasis ?? 'normal'" />
+        }
+      </div>
+      <div class="rm__col" data-visual-id="runtime-metrics.grid.col-b">
+        @for (r of colB; track r.k) {
+          <pm-kv [k]="r.k" [v]="r.v" [unit]="r.unit" [emphasis]="r.emphasis ?? 'normal'" />
+        }
+      </div>
+    </div>
+  </pm-body>
+</pm-panel>

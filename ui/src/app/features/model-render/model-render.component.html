@@ -1,0 +1,33 @@
+<pm-panel label="MODEL RENDER" status="live" visualId="model-render" density="compact">
+  <pm-header>
+    <h3 class="pm-header__title">MODEL RENDER</h3>
+    <span class="mr__id">ID: 34-842</span>
+  </pm-header>
+  <pm-body>
+    <div class="mr__overlay mr__overlay--tl" data-visual-id="model-render.overlay.tl">
+      <pm-kv k="ID" v="255212" />
+      <pm-kv k="DATA_SET" v="POLARIS" />
+      <pm-kv k="UNIT_GROUP" v="M22" />
+    </div>
+    <div class="mr__overlay mr__overlay--tr" data-visual-id="model-render.overlay.tr">
+      <pm-kv k="—" v="2023-02-28T20:27:00.285Z" />
+      <pm-kv k="—" v="(UP TO DATE)" />
+    </div>
+    <div class="mr__canvas" data-visual-id="model-render.canvas">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <circle cx="50" cy="50" r="42" class="mr__ring" />
+        <circle cx="50" cy="50" r="42" class="mr__ring mr__ring--dots" />
+        @for (p of points; track $index) {
+          <circle [attr.cx]="p.cx" [attr.cy]="p.cy" r="0.4" class="mr__point" />
+        }
+      </svg>
+    </div>
+  </pm-body>
+  <pm-footer>
+    <div class="mr__footer-block">
+      <pm-kv k="UNIT_TESTS" v="OK" />
+      <pm-chip tone="accent" [selected]="true">FPS: 32.77470378</pm-chip>
+    </div>
+    <pm-kv k="FRAMER_MOTION" v="8.0.3-ALPHA.1" />
+  </pm-footer>
+</pm-panel>

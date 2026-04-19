@@ -1,0 +1,41 @@
+@use '../../../styles/mixins/pulse' as p;
+
+:host {
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+
+.pm-live__dot {
+
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 3px rgba(255, 51, 85, 0.25);
+}
+
+:host.pm-live--live .pm-live__dot {
+
+  @include p.pm-pulse(1.2s);
+}
+
+:host.pm-live--stale .pm-live__dot {
+
+  background: var(--warn);
+  box-shadow: 0 0 0 3px rgba(245, 165, 36, 0.2);
+  animation: none;
+}
+
+:host.pm-live--offline .pm-live__dot {
+
+  background: var(--fg-2);
+  box-shadow: none;
+  animation: none;
+}

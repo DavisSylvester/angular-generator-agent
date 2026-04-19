@@ -10,7 +10,7 @@ import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
 const exampleId = process.argv[2] ?? `full-stack-dashboard`;
-const url = process.argv[3] ?? `http://localhost:4200/atoms`;
+const url = process.argv[3] ?? `http://localhost:4200/dashboard`;
 // Hard rule — pass threshold is 10% pixel mismatch. Overridable via arg 4 but the
 // default is authoritative and documented in docs/ui-plan/03-visual-validation.md §6.
 const thresholdRatio = Number(process.argv[4] ?? 0.10);

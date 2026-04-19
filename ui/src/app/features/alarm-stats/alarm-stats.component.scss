@@ -1,0 +1,32 @@
+:host {
+
+  display: block;
+  width: 100%;
+}
+
+.alarm-stats__cols {
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  width: 100%;
+  text-align: center;
+}
+
+.alarm-stats__grid {
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 91px;
+  gap: 0;
+  padding-top: var(--sp-1);
+}
+
+.alarm-stats__grid > pm-panel {
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}

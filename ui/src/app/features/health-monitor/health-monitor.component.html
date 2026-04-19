@@ -1,0 +1,34 @@
+<pm-panel label="HEALTH MONITOR" status="live" visualId="health-monitor" density="compact">
+  <pm-header>
+    <div class="hm__left">
+      <h3 class="pm-header__title">HEALTH MONITOR</h3>
+    </div>
+    <div class="hm__controls" data-visual-id="health-monitor.header.controls">
+      <pm-live state="live" />
+    </div>
+  </pm-header>
+  <pm-body>
+    <div class="hm__chart" data-visual-id="health-monitor.chart">
+      <div class="hm__y-axis">
+        <span>250</span>
+        <span>200</span>
+        <span>150</span>
+        <span>100</span>
+        <span>50</span>
+        <span>0</span>
+      </div>
+      <svg class="hm__plot" viewBox="0 0 340 150" preserveAspectRatio="none" aria-hidden="true">
+        @for (y of [0, 30, 60, 90, 120, 150]; track y) {
+          <line [attr.x1]="0" [attr.x2]="340" [attr.y1]="y" [attr.y2]="y" class="hm__grid-line" />
+        }
+        <path [attr.d]="path" class="hm__line" />
+      </svg>
+      <div class="hm__x-axis">
+        <span>21:25:30</span>
+        <span>21:26</span>
+        <span>21:26:30</span>
+        <span>21:27</span>
+      </div>
+    </div>
+  </pm-body>
+</pm-panel>

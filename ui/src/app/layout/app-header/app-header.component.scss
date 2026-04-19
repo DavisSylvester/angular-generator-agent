@@ -1,0 +1,102 @@
+:host {
+
+  display: block;
+  width: 100%;
+  position: relative;
+}
+
+.appheader {
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: var(--sp-4) var(--sp-6);
+  color: var(--fg-0);
+  position: relative;
+  min-height: 140px;
+  border-bottom: var(--bw-hair) solid var(--line);
+}
+
+.appheader__brand {
+
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.appheader__logo {
+
+  width: 40px;
+  height: 40px;
+  color: var(--fg-accent);
+}
+
+.appheader__brand-text {
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.appheader__title {
+
+  font-family: var(--font-mono);
+  font-size: var(--t-lg);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-0);
+  font-weight: 500;
+}
+
+.appheader__title-alt {
+
+  color: var(--fg-1);
+  font-weight: 300;
+}
+
+.appheader__subtitle {
+
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.appheader__nav {
+
+  display: flex;
+  gap: var(--sp-6);
+  justify-self: center;
+  align-self: end;
+  padding-bottom: var(--sp-2);
+}
+
+.appheader__tab {
+
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-2);
+  text-decoration: none;
+  padding-bottom: 6px;
+  border-bottom: 2px solid transparent;
+}
+
+.appheader__tab--active {
+
+  color: var(--fg-0);
+  border-bottom-color: var(--fg-accent);
+}
+
+.appheader__accent {
+
+  position: absolute;
+  left: var(--sp-6);
+  right: var(--sp-6);
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--fg-accent) 12%, var(--fg-accent) 88%, transparent 100%);
+  opacity: 0.5;
+}

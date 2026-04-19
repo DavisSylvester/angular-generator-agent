@@ -1,0 +1,26 @@
+:host {
+
+  display: block;
+  width: 100%;
+  --pm-bar-color: var(--fg-accent);
+}
+
+:host.pm-bar--ok   { --pm-bar-color: var(--ok); }
+:host.pm-bar--warn { --pm-bar-color: var(--warn); }
+:host.pm-bar--crit { --pm-bar-color: var(--crit); }
+
+.pm-bar__track {
+
+  position: relative;
+  height: 6px;
+  background: var(--bg-2);
+  border: var(--bw-hair) solid var(--line-dim);
+  overflow: hidden;
+}
+
+.pm-bar__fill {
+
+  height: 100%;
+  background: var(--pm-bar-color);
+  transition: width var(--dur-med) var(--easing);
+}

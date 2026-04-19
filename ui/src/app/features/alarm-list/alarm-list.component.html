@@ -1,0 +1,29 @@
+<pm-panel label="ALARM LIST" visualId="alarm-list" density="compact">
+  <pm-header>
+    <h3 class="pm-header__title">ALARM LIST</h3>
+  </pm-header>
+  <pm-body>
+    <ul class="al__list" role="list">
+      @for (a of alarms; track a.id; let i = $index) {
+        <li class="al__card" [attr.data-visual-id]="'alarm-list.card.' + i">
+          <div class="al__card-head">
+            <div class="al__card-id">
+              <span class="al__warn-icon">△</span>
+              <div class="al__card-title-block">
+                <span class="al__card-id-label">ID: {{ a.id }}</span>
+                <h4 class="al__card-name">{{ a.name }}</h4>
+              </div>
+            </div>
+            <div class="al__card-tags">
+              @for (t of a.tags; track $index) {
+                <pm-chip [selected]="t.selected ?? false" [tone]="t.tone ?? 'default'">{{ t.text }}</pm-chip>
+              }
+            </div>
+          </div>
+          <div class="al__card-meta">DUE DATE: {{ a.dueDate }}</div>
+          <p class="al__card-desc"><span class="al__desc-prefix">DESC:</span> {{ a.desc }}</p>
+        </li>
+      }
+    </ul>
+  </pm-body>
+</pm-panel>

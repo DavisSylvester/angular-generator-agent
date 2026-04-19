@@ -3,17 +3,452 @@
   "thresholdRatio": 0.1,
   "rows": [
     {
+      "id": "page",
+      "baselineSize": [
+        1905,
+        953
+      ],
+      "actualSize": [
+        1905,
+        909
+      ],
+      "mismatchedPixels": 76110,
+      "mismatchRatio": 0.04192314365741009,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "app-header",
+      "baselineSize": [
+        1905,
+        150
+      ],
+      "actualSize": [
+        1905,
+        140
+      ],
+      "mismatchedPixels": 2380,
+      "mismatchRatio": 0.008328958880139983,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "app-header.brand",
+      "baselineSize": [
+        360,
+        105
+      ],
+      "actualSize": [
+        788,
+        41
+      ],
+      "mismatchedPixels": 973,
+      "mismatchRatio": 0.02574074074074074,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "app-header.nav",
+      "baselineSize": [
+        475,
+        50
+      ],
+      "actualSize": [
+        267,
+        31
+      ],
+      "mismatchedPixels": 665,
+      "mismatchRatio": 0.028,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "app-header.accent-rule",
+      "baselineSize": [
+        1845,
+        4
+      ],
+      "actualSize": [
+        1841,
+        2
+      ],
+      "mismatchedPixels": 492,
+      "mismatchRatio": 0.06666666666666667,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "dashboard-page",
+      "baselineSize": [
+        1905,
+        803
+      ],
+      "actualSize": [
+        1905,
+        769
+      ],
+      "mismatchedPixels": 72718,
+      "mismatchRatio": 0.04753695949899164,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "dashboard-page.tag",
+      "baselineSize": [
+        180,
+        24
+      ],
+      "actualSize": [
+        111,
+        17
+      ],
+      "mismatchedPixels": 3731,
+      "mismatchRatio": 0.8636574074074074,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "model-render",
+      "baselineSize": [
+        580,
+        335
+      ],
+      "actualSize": [
+        580,
+        396
+      ],
+      "mismatchedPixels": 8244,
+      "mismatchRatio": 0.04242923314462172,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "model-render.canvas",
+      "baselineSize": [
+        580,
+        265
+      ],
+      "actualSize": [
+        280,
+        286
+      ],
+      "mismatchedPixels": 3479,
+      "mismatchRatio": 0.022635003253090435,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "model-render.overlay.tl",
+      "baselineSize": [
+        195,
+        55
+      ],
+      "actualSize": [
+        138,
+        67
+      ],
+      "mismatchedPixels": 630,
+      "mismatchRatio": 0.05874125874125874,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "model-render.overlay.tr",
+      "baselineSize": [
+        205,
+        55
+      ],
+      "actualSize": [
+        193,
+        48
+      ],
+      "mismatchedPixels": 1011,
+      "mismatchRatio": 0.08966740576496673,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "health-monitor",
+      "baselineSize": [
+        475,
+        335
+      ],
+      "actualSize": [
+        475,
+        270
+      ],
+      "mismatchedPixels": 3769,
+      "mismatchRatio": 0.023685781618224665,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "health-monitor.header.controls",
+      "baselineSize": [
+        130,
+        22
+      ],
+      "actualSize": [
+        75,
+        15
+      ],
+      "mismatchedPixels": 335,
+      "mismatchRatio": 0.11713286713286714,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "health-monitor.chart",
+      "baselineSize": [
+        475,
+        265
+      ],
+      "actualSize": [
+        473,
+        225
+      ],
+      "mismatchedPixels": 1784,
+      "mismatchRatio": 0.01417279046673287,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics",
+      "baselineSize": [
+        760,
+        335
+      ],
+      "actualSize": [
+        760,
+        312
+      ],
+      "mismatchedPixels": 13104,
+      "mismatchRatio": 0.051468970934799685,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics.bars",
+      "baselineSize": [
+        760,
+        40
+      ],
+      "actualSize": [
+        758,
+        43
+      ],
+      "mismatchedPixels": 3309,
+      "mismatchRatio": 0.10884868421052632,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics.bars.load",
+      "baselineSize": [
+        760,
+        18
+      ],
+      "actualSize": [
+        758,
+        16
+      ],
+      "mismatchedPixels": 3448,
+      "mismatchRatio": 0.252046783625731,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics.bars.thre",
+      "baselineSize": [
+        760,
+        18
+      ],
+      "actualSize": [
+        758,
+        15
+      ],
+      "mismatchedPixels": 739,
+      "mismatchRatio": 0.05402046783625731,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics.grid",
+      "baselineSize": [
+        760,
+        253
+      ],
+      "actualSize": [
+        758,
+        217
+      ],
+      "mismatchedPixels": 8051,
+      "mismatchRatio": 0.04187122945704182,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics.grid.col-a",
+      "baselineSize": [
+        375,
+        253
+      ],
+      "actualSize": [
+        371,
+        217
+      ],
+      "mismatchedPixels": 4795,
+      "mismatchRatio": 0.05054018445322793,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "runtime-metrics.grid.col-b",
+      "baselineSize": [
+        380,
+        253
+      ],
+      "actualSize": [
+        371,
+        217
+      ],
+      "mismatchedPixels": 3179,
+      "mismatchRatio": 0.03306636155606407,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes",
+      "baselineSize": [
+        580,
+        358
+      ],
+      "actualSize": [
+        580,
+        514
+      ],
+      "mismatchedPixels": 10023,
+      "mismatchRatio": 0.048271046041225195,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.status-row",
+      "baselineSize": [
+        580,
+        22
+      ],
+      "actualSize": [
+        578,
+        29
+      ],
+      "mismatchedPixels": 938,
+      "mismatchRatio": 0.07351097178683386,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.tiles",
+      "baselineSize": [
+        580,
+        78
+      ],
+      "actualSize": [
+        578,
+        121
+      ],
+      "mismatchedPixels": 1243,
+      "mismatchRatio": 0.027475685234305925,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.tiles.nodes",
+      "baselineSize": [
+        190,
+        78
+      ],
+      "actualSize": [
+        188,
+        105
+      ],
+      "mismatchedPixels": 369,
+      "mismatchRatio": 0.024898785425101214,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.tiles.active",
+      "baselineSize": [
+        190,
+        78
+      ],
+      "actualSize": [
+        188,
+        105
+      ],
+      "mismatchedPixels": 398,
+      "mismatchRatio": 0.026855600539811068,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.tiles.alarms",
+      "baselineSize": [
+        196,
+        78
+      ],
+      "actualSize": [
+        188,
+        105
+      ],
+      "mismatchedPixels": 599,
+      "mismatchRatio": 0.03918105703819989,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.grid",
+      "baselineSize": [
+        580,
+        175
+      ],
+      "actualSize": [
+        578,
+        278
+      ],
+      "mismatchedPixels": 5535,
+      "mismatchRatio": 0.0545320197044335,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "active-nodes.filters",
+      "baselineSize": [
+        580,
+        35
+      ],
+      "actualSize": [
+        578,
+        19
+      ],
+      "mismatchedPixels": 187,
+      "mismatchRatio": 0.009211822660098522,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
       "id": "alarm-stats",
       "baselineSize": [
         475,
         120
       ],
       "actualSize": [
-        476,
-        138
+        475,
+        137
       ],
-      "mismatchedPixels": 3889,
-      "mismatchRatio": 0.0682280701754386,
+      "mismatchedPixels": 3855,
+      "mismatchRatio": 0.06763157894736842,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -24,13 +459,13 @@
         92
       ],
       "actualSize": [
-        159,
+        158,
         92
       ],
-      "mismatchedPixels": 1221,
-      "mismatchRatio": 0.08399834892680243,
+      "mismatchedPixels": 1242,
+      "mismatchRatio": 0.08544303797468354,
       "pass": true,
-      "reason": "size-mismatch-resized"
+      "reason": "identical-size"
     },
     {
       "id": "alarm-stats.alarms",
@@ -39,13 +474,13 @@
         92
       ],
       "actualSize": [
-        158,
+        159,
         92
       ],
-      "mismatchedPixels": 975,
-      "mismatchRatio": 0.06707484865162355,
+      "mismatchedPixels": 1003,
+      "mismatchRatio": 0.06900110071546506,
       "pass": true,
-      "reason": "identical-size"
+      "reason": "size-mismatch-resized"
     },
     {
       "id": "alarm-stats.sla",
@@ -54,13 +489,73 @@
         92
       ],
       "actualSize": [
-        159,
+        158,
         92
       ],
-      "mismatchedPixels": 1178,
-      "mismatchRatio": 0.080530489472245,
+      "mismatchedPixels": 1193,
+      "mismatchRatio": 0.08155592015313098,
       "pass": true,
-      "reason": "identical-size"
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-list",
+      "baselineSize": [
+        760,
+        358
+      ],
+      "actualSize": [
+        760,
+        419
+      ],
+      "mismatchedPixels": 17286,
+      "mismatchRatio": 0.06353278447515437,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-list.card.0",
+      "baselineSize": [
+        760,
+        110
+      ],
+      "actualSize": [
+        758,
+        118
+      ],
+      "mismatchedPixels": 7146,
+      "mismatchRatio": 0.08547846889952153,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-list.card.1",
+      "baselineSize": [
+        760,
+        100
+      ],
+      "actualSize": [
+        758,
+        133
+      ],
+      "mismatchedPixels": 6031,
+      "mismatchRatio": 0.07935526315789473,
+      "pass": true,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-list.card.2",
+      "baselineSize": [
+        760,
+        100
+      ],
+      "actualSize": [
+        758,
+        101
+      ],
+      "mismatchedPixels": 1939,
+      "mismatchRatio": 0.025513157894736842,
+      "pass": true,
+      "reason": "size-mismatch-resized"
     }
   ]
 }

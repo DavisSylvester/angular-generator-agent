@@ -1,0 +1,73 @@
+:host {
+
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hm__left {
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.hm__controls {
+
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.hm__chart {
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: var(--sp-1);
+  background: var(--bg-2);
+  padding: var(--sp-2);
+  min-height: 220px;
+}
+
+.hm__y-axis {
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--fg-2);
+  text-align: right;
+}
+
+.hm__plot {
+
+  width: 100%;
+  height: 100%;
+}
+
+.hm__grid-line {
+
+  stroke: var(--line-dim);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.hm__line {
+
+  fill: none;
+  stroke: var(--fg-accent);
+  stroke-width: 1.5;
+}
+
+.hm__x-axis {
+
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--fg-2);
+  margin-top: var(--sp-1);
+}

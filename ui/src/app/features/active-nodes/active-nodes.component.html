@@ -1,0 +1,48 @@
+<pm-panel label="ACTIVE NODES" visualId="active-nodes" density="compact">
+  <pm-header>
+    <h3 class="pm-header__title">ACTIVE NODES</h3>
+  </pm-header>
+  <pm-body>
+    <div class="an__status-row" data-visual-id="active-nodes.status-row">
+      <pm-kv k="SOCKET_CONNECTION" v="OK" />
+      <pm-kv k="LOCATION" v="US-WEST_2" />
+      <pm-kv k="AUTH_STATUS" v="OK" />
+    </div>
+    <div class="an__tiles" data-visual-id="active-nodes.tiles">
+      <pm-panel variant="inset" density="compact" visualId="active-nodes.tiles.nodes">
+        <pm-body>
+          <div class="an__tile-head"><span class="an__tile-icon">▦</span><span>NODES</span></div>
+          <pm-kv k="SYS" v="162" />
+          <pm-kv k="AVG" v="99" unit="%" />
+        </pm-body>
+      </pm-panel>
+      <pm-panel variant="inset" density="compact" visualId="active-nodes.tiles.active">
+        <pm-body>
+          <div class="an__tile-head"><span class="an__tile-icon">∿</span><span>ACTIVE</span></div>
+          <pm-kv k="DIA" v="OK" />
+          <pm-kv k="%" v="97%" />
+        </pm-body>
+      </pm-panel>
+      <pm-panel variant="inset" density="compact" visualId="active-nodes.tiles.alarms">
+        <pm-body>
+          <div class="an__tile-head"><span class="an__tile-icon">△</span><span>ALARMS</span></div>
+          <pm-kv k="HIGH" v="8" />
+          <pm-kv k="AVG" v="—" />
+        </pm-body>
+      </pm-panel>
+    </div>
+    <div class="an__grid" data-visual-id="active-nodes.grid">
+      @for (c of cells; track $index) {
+        <span class="an__cell" [class.an__cell--active]="c === 'active'" [class.an__cell--alarm]="c === 'alarm'"></span>
+      }
+    </div>
+  </pm-body>
+  <pm-footer>
+    <div class="an__filters" data-visual-id="active-nodes.filters">
+      <span class="an__filter-icon">⚙</span>
+      @for (f of filters; track f.label) {
+        <pm-chip [selected]="f.active" [tone]="f.active ? 'accent' : 'muted'">{{ f.label }}</pm-chip>
+      }
+    </div>
+  </pm-footer>
+</pm-panel>

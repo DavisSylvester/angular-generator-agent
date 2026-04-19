@@ -6,8 +6,12 @@ export const routes: Routes = [
     loadComponent: () => import(`./atoms-preview/atoms-preview.component`).then((m) => m.AtomsPreviewComponent),
   },
   {
+    path: `dashboard`,
+    loadComponent: () => import(`./layout/dashboard-page/dashboard-page.component`).then((m) => m.DashboardPageComponent),
+  },
+  {
     path: ``,
-    redirectTo: `atoms`,
+    redirectTo: `dashboard`,
     pathMatch: `full`,
   },
 ];
