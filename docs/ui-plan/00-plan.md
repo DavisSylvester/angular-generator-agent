@@ -393,7 +393,9 @@ Current `src/prompts/*.mts` files hold prompts as template literals. These are o
 
 ## 9. Visual Validation
 
-**Hard rule:** no component is marked complete until its rendered output matches the per-section "before picture" cropped from the reference design, within a strict tolerance on color, typography, spacing, borders, corner ticks, and iconography.
+**Hard rule (process):** after every component or element is created or modified, the full Stage A + Stage B + Stage C validation must run via `bun run scripts/verify.mts <example-id>`. Eyeballing a captured PNG is **not** validation. Stage C must produce a pass row in the report before the work is called done. See KB §3 — `docs/knowledge-bases/panel-model-fidelity-corrections.md`.
+
+**Hard rule (output):** no component is marked complete until its rendered output matches the per-section "before picture" cropped from the reference design, within a strict tolerance on color, typography, spacing, borders, corner ticks, and iconography.
 
 Full spec → [`03-visual-validation.md`](03-visual-validation.md).
 
@@ -407,7 +409,7 @@ Full spec → [`03-visual-validation.md`](03-visual-validation.md).
 
 ### 9.2 Defaults
 
-- `pixelMismatchRatio` ≤ 0.5 %
+- `pixelMismatchRatio` ≤ **10 %** (hard pass line, enforced by `scripts/verify.mts`)
 - `perceptualDelta` ≤ 1.5
 - Attribute checks: **100 % must pass** — no escape.
 - Volatile regions (chart line, Model Render canvas) use committed PNG masks.

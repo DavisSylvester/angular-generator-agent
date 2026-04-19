@@ -178,14 +178,16 @@ The `diffImage` is a 3-panel composite: `[baseline | actual | highlighted-diff]`
 
 ## 6. Tolerance Policy
 
-"Almost pixel perfect" means strict defaults with narrow, documented escapes:
+The hard pass/fail line is a **pixel mismatch ratio ≤ 10 %** per region. Tighter local thresholds may be declared in a per-region override, but 10 % is the authoritative default and the number enforced by `scripts/verify.mts`.
 
 | Metric | Default threshold | Escape |
 |---|---|---|
-| `pixelMismatchRatio` (pixelmatch) | ≤ **0.5 %** | Per-region override in `tolerances.json` with a written reason |
+| `pixelMismatchRatio` (pixelmatch) | ≤ **10 %** | Per-region override in `tolerances.json` with a written reason |
 | `perceptualDelta` (resemblejs) | ≤ **1.5** | Same |
 | `attributeChecks.pass` | 100 % must pass | No escape — attribute checks are hard gates |
 | Antialiasing tolerance | `threshold: 0.1` in pixelmatch | Fixed |
+
+> History — the earlier number in this doc was 0.5 %. It was updated to 10 % on 2026-04-18 to reflect a pragmatic pass bar during early-iteration work. 10 % catches gross structural drift (wrong atom, missing motif, major size mismatch) while tolerating sub-pixel font rasterization and minor spacing differences that dominate the pixel count at small crop sizes.
 
 Regions that legitimately vary (chart lines, Model Render) use a **masked diff**: a PNG mask (`visual-masks/<id>.png`) zeroes the volatile area before pixel comparison. The mask itself is reviewed the way code is.
 

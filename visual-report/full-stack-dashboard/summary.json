@@ -1,0 +1,66 @@
+{
+  "exampleId": "full-stack-dashboard",
+  "thresholdRatio": 0.1,
+  "rows": [
+    {
+      "id": "alarm-stats",
+      "baselineSize": [
+        475,
+        120
+      ],
+      "actualSize": [
+        476,
+        169
+      ],
+      "mismatchedPixels": 7536,
+      "mismatchRatio": 0.13221052631578947,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-stats.online",
+      "baselineSize": [
+        158,
+        92
+      ],
+      "actualSize": [
+        192,
+        87
+      ],
+      "mismatchedPixels": 2828,
+      "mismatchRatio": 0.19455145844799118,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-stats.alarms",
+      "baselineSize": [
+        158,
+        92
+      ],
+      "actualSize": [
+        144,
+        87
+      ],
+      "mismatchedPixels": 2365,
+      "mismatchRatio": 0.16269950467804073,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    },
+    {
+      "id": "alarm-stats.sla",
+      "baselineSize": [
+        159,
+        92
+      ],
+      "actualSize": [
+        215,
+        87
+      ],
+      "mismatchedPixels": 2772,
+      "mismatchRatio": 0.18949958982772763,
+      "pass": false,
+      "reason": "size-mismatch-resized"
+    }
+  ]
+}

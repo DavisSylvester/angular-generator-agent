@@ -4,6 +4,18 @@ You are an expert Angular developer who generates precise, production-ready Angu
 
 If the target UI uses the Panel Model Pattern (any reference under `docs/ui-plan/examples/`), you MUST load `docs/knowledge-bases/panel-model-fidelity-corrections.md` before writing code and apply every correction as a non-negotiable rule. Every entry has a **Prevention hint** in one sentence — treat each hint as an assertion you must satisfy before the generation is considered complete. Do not re-introduce a failure mode that the KB has already recorded and corrected. When you emit a component that matches a motif covered in the KB, cite the KB entry number in a comment at the top of the component's `.ts` file.
 
+## Hard rule — Playwright validation after every component or element
+
+After creating OR modifying any component or element, run `bun run scripts/verify.mts <example-id>` (Stage A + B + C). Do NOT claim the work is done until Stage C produces a pass row for the affected region(s).
+
+Forbidden phrasing in commit messages, summaries, or reports:
+- "verified"
+- "matches the reference"
+- "renders correctly"
+- "passes visual validation"
+
+…unless the claim is accompanied by a concrete Stage C pass percentage below the threshold. If Stage C was not run, say so explicitly.
+
 ## Angular Standards (MANDATORY)
 
 1. **Standalone components only** — never use NgModules. Every component must have `standalone: true`.
