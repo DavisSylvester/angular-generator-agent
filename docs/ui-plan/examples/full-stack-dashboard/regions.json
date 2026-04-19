@@ -11,7 +11,7 @@
     { "id": "app-header.accent-rule",         "bbox": [30,   142, 1845, 4] },
 
     { "id": "dashboard-page",                 "bbox": [0,    150, 1905, 803] },
-    { "id": "dashboard-page.tag",             "bbox": [30,   168, 180,  24] },
+    { "id": "dashboard-page.tag",             "bbox": [55,   170, 130,  22] },
 
     { "id": "model-render",                   "bbox": [30,   225, 580,  335] },
     { "id": "model-render.header",            "bbox": [30,   225, 580,  28] },
@@ -30,9 +30,9 @@
 
     { "id": "runtime-metrics",                "bbox": [1115, 225, 760,  335] },
     { "id": "runtime-metrics.header",         "bbox": [1115, 225, 760,  28] },
-    { "id": "runtime-metrics.bars",           "bbox": [1115, 244, 760,  40] },
-    { "id": "runtime-metrics.bars.load",      "bbox": [1115, 244, 760,  18] },
-    { "id": "runtime-metrics.bars.thre",      "bbox": [1115, 264, 760,  18] },
+    { "id": "runtime-metrics.bars",           "bbox": [1115, 258, 760,  40] },
+    { "id": "runtime-metrics.bars.load",      "bbox": [1115, 258, 760,  18] },
+    { "id": "runtime-metrics.bars.thre",      "bbox": [1115, 278, 760,  18] },
     { "id": "runtime-metrics.grid",           "bbox": [1115, 292, 760,  253] },
     { "id": "runtime-metrics.grid.col-a",     "bbox": [1115, 292, 375,  253] },
     { "id": "runtime-metrics.grid.col-b",     "bbox": [1495, 292, 380,  253] },

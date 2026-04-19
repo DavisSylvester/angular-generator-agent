@@ -1,6 +1,6 @@
 {
   "example": "full-stack-dashboard",
-  "generatedAt": "2026-04-19T01:37:20.344Z",
+  "generatedAt": "2026-04-19T01:43:20.507Z",
   "entries": [
     {
       "id": "page",
@@ -89,14 +89,14 @@
     {
       "id": "dashboard-page.tag",
       "bbox": [
-        30,
-        168,
-        180,
-        24
+        55,
+        170,
+        130,
+        22
       ],
-      "width": 180,
-      "height": 24,
-      "sha256": "b3713ea944c14136c5cbef1edadd689954c6affff4d278e84a996aa4542cce5d",
+      "width": 130,
+      "height": 22,
+      "sha256": "c904c471a37cbc12d1941019fa2822efa5b0a95974ea1ef2960dc24ae5895ec8",
       "mask": false,
       "prototype": false
     },
@@ -314,13 +314,13 @@
       "id": "runtime-metrics.bars",
       "bbox": [
         1115,
-        244,
+        258,
         760,
         40
       ],
       "width": 760,
       "height": 40,
-      "sha256": "4c54285d96ad1598570c2f2568cbb70c403414d9df31e95d07e20ed0c64b0332",
+      "sha256": "5171b498e19581ff2675fcc4b9aec475011d087e6d6d9be8da2fab3cbff07957",
       "mask": false,
       "prototype": false
     },
@@ -328,13 +328,13 @@
       "id": "runtime-metrics.bars.load",
       "bbox": [
         1115,
-        244,
+        258,
         760,
         18
       ],
       "width": 760,
       "height": 18,
-      "sha256": "6f8353ac80b7a959b2d39b21638445d5554c4a3f34583c1ae6ab70cc7be8c9c5",
+      "sha256": "bfde601daea7301f41465045ae5e3291167b684ab139cb6c96ab50f441b786e4",
       "mask": false,
       "prototype": false
     },
@@ -342,13 +342,13 @@
       "id": "runtime-metrics.bars.thre",
       "bbox": [
         1115,
-        264,
+        278,
         760,
         18
       ],
       "width": 760,
       "height": 18,
-      "sha256": "9d7c8933ea72a015e05b504951773c85f1763198391aaecf1a75cce4e1d223c2",
+      "sha256": "f676cf490f8f17a01a713236fb6fd1eff181ed798fb00e43313bce694682b95b",
       "mask": false,
       "prototype": false
     },

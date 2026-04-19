@@ -12,8 +12,8 @@
         1905,
         909
       ],
-      "mismatchedPixels": 76110,
-      "mismatchRatio": 0.04192314365741009,
+      "mismatchedPixels": 75309,
+      "mismatchRatio": 0.041481934380447984,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -87,23 +87,23 @@
         1905,
         769
       ],
-      "mismatchedPixels": 72718,
-      "mismatchRatio": 0.04753695949899164,
+      "mismatchedPixels": 71917,
+      "mismatchRatio": 0.047013332548873486,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
       "id": "dashboard-page.tag",
       "baselineSize": [
-        180,
-        24
+        130,
+        22
       ],
       "actualSize": [
         111,
         17
       ],
-      "mismatchedPixels": 3731,
-      "mismatchRatio": 0.8636574074074074,
+      "mismatchedPixels": 2319,
+      "mismatchRatio": 0.8108391608391609,
       "pass": false,
       "reason": "size-mismatch-resized"
     },
@@ -177,8 +177,8 @@
         475,
         270
       ],
-      "mismatchedPixels": 3769,
-      "mismatchRatio": 0.023685781618224665,
+      "mismatchedPixels": 3793,
+      "mismatchRatio": 0.023836606441476827,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -207,8 +207,8 @@
         473,
         225
       ],
-      "mismatchedPixels": 1784,
-      "mismatchRatio": 0.01417279046673287,
+      "mismatchedPixels": 1793,
+      "mismatchRatio": 0.01424428997020854,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -222,8 +222,8 @@
         760,
         312
       ],
-      "mismatchedPixels": 13104,
-      "mismatchRatio": 0.051468970934799685,
+      "mismatchedPixels": 12061,
+      "mismatchRatio": 0.04737234878240377,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -237,8 +237,8 @@
         758,
         43
       ],
-      "mismatchedPixels": 3309,
-      "mismatchRatio": 0.10884868421052632,
+      "mismatchedPixels": 4570,
+      "mismatchRatio": 0.15032894736842106,
       "pass": false,
       "reason": "size-mismatch-resized"
     },
@@ -252,8 +252,8 @@
         758,
         16
       ],
-      "mismatchedPixels": 3448,
-      "mismatchRatio": 0.252046783625731,
+      "mismatchedPixels": 2785,
+      "mismatchRatio": 0.20358187134502925,
       "pass": false,
       "reason": "size-mismatch-resized"
     },
@@ -267,9 +267,9 @@
         758,
         15
       ],
-      "mismatchedPixels": 739,
-      "mismatchRatio": 0.05402046783625731,
-      "pass": true,
+      "mismatchedPixels": 2597,
+      "mismatchRatio": 0.1898391812865497,
+      "pass": false,
       "reason": "size-mismatch-resized"
     },
     {
