@@ -3,8 +3,9 @@ import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-const url = Bun.argv[2] ?? `http://localhost:4200/atoms`;
-const exampleId = Bun.argv[3] ?? `full-stack-dashboard`;
+const args = process.argv.slice(2);
+const url = args[0] ?? `http://localhost:4200/atoms`;
+const exampleId = args[1] ?? `full-stack-dashboard`;
 
 const outRoot = join(`visual-actual`, exampleId);
 mkdirSync(outRoot, { recursive: true });

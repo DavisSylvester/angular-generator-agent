@@ -1,0 +1,8 @@
+@for (seg of segments(); track $index) {
+  <span
+    class="pm-indicator__seg"
+    [class.pm-indicator__seg--on]="seg.on"
+    [class.pm-indicator__seg--off]="!seg.on"
+    aria-hidden="true"
+  ></span>
+}

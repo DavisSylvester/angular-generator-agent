@@ -36,6 +36,13 @@ The process does **not** assume any single input shape. The reference image alon
 
 ## 2. The Algorithm
 
+> **HARD precondition — describe-before-name.** At every node, before naming any atom:
+> 1. Write a **literal visual description** of the region's contents: count distinct elements, record shape / fill vs outline / color / alignment / repetition count. Read at **native pixel size**, not fit-to-window zoom.
+> 2. Only then consult the atom catalogue.
+> 3. For every atom you name, assert in writing: *"this atom with these inputs can render exactly what the reference shows."* If the honest answer is "close but not exact," either extend the atom's inputs (pattern change) or propose a new atom (example `atoms-delta.md`).
+>
+> Skipping these steps is how `AccentRule` got written where a 4-segment `ActivityIndicator` belonged. See KB §1 — `docs/knowledge-bases/panel-model-fidelity-corrections.md`.
+
 Decomposition is a depth-first walk. At each node, apply the same five steps, then recurse.
 
 ```

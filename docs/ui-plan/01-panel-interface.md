@@ -192,7 +192,19 @@ Inline mini-chart for trend indicators.
 | `height` | `number` | Default 24 |
 | `status` | `PanelStatus` | Drives stroke color |
 
-### 6.4 `LiveChipComponent`
+### 6.4 `ActivityIndicatorComponent`
+
+N-segment horizontal tick group that conveys fractional or binary-coded state (e.g. "2 of 4 active"). Recorded in KB §1.
+
+| Input | Type | Notes |
+|---|---|---|
+| `total` | `number` | Default 4 |
+| `active` | `number` | 0..total; first `active` segments render filled |
+| `status` | `PanelStatus` | Drives segment color (filled and outline both use status color) |
+| `segmentWidth?` | `string` | CSS length. Default `var(--sp-3)` |
+| `segmentGap?` | `string` | CSS length. Default `var(--sp-1)` |
+
+### 6.5 `LiveChipComponent`
 
 Pulsing dot + text — `LIVE FEED`, `OFFLINE`, `STALE`.
 

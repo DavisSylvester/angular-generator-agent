@@ -1,7 +1,76 @@
-@use '../../../styles/mixins/stat-hero' as sh;
+// KB §1 — ratio stats have a 2-col label under the numeral/denominator.
+// KB §2 — labels share ONE grid with the numeral row so columns align.
 
 :host {
 
-  display: inline-block;
-  @include sh.pm-stat-hero;
+  display: block;
+  font-family: var(--font-mono);
+  color: var(--fg-0);
+  text-align: left;
 }
+
+.pm-stat__grid {
+
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  align-items: baseline;
+  column-gap: var(--sp-2);
+  row-gap: var(--sp-1);
+  line-height: var(--lh-tight);
+}
+
+.pm-stat__grid--solo {
+
+  grid-template-columns: auto auto;
+}
+
+.pm-stat__value {
+
+  font-size: var(--t-xxl);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--fg-0);
+}
+
+.pm-stat__sep {
+
+  font-size: var(--t-xxl);
+  font-weight: 300;
+  color: var(--fg-2);
+}
+
+.pm-stat__denom {
+
+  font-size: var(--t-xxl);
+  font-weight: 400;
+  color: var(--fg-2);
+}
+
+.pm-stat__unit {
+
+  font-size: var(--t-md);
+  color: var(--fg-2);
+  align-self: end;
+  margin-bottom: calc(var(--t-xxl) * 0.15);
+}
+
+.pm-stat__label-left,
+.pm-stat__label-right,
+.pm-stat__label {
+
+  font-size: var(--t-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+
+.pm-stat__label-right {
+
+  color: var(--fg-2);
+  grid-column: 3;
+}
+
+:host.pm-stat--ok   .pm-stat__value { color: var(--ok); }
+:host.pm-stat--warn .pm-stat__value { color: var(--warn); }
+:host.pm-stat--crit .pm-stat__value { color: var(--crit); }
+:host.pm-stat--live .pm-stat__value { color: var(--live); }

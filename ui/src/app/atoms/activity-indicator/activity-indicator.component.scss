@@ -1,0 +1,35 @@
+// KB §1 — 4-segment indicator, filled + outlined. Do not replace with AccentRule.
+// KB §2 — outlined segments must be truly hollow (transparent interior, visible border).
+
+:host {
+
+  display: inline-flex;
+  gap: var(--pm-indicator-seg-gap, var(--sp-1));
+  margin-top: var(--sp-2);
+  --pm-indicator-color: var(--fg-1);
+}
+
+:host.pm-indicator--ok   { --pm-indicator-color: var(--ok); }
+:host.pm-indicator--warn { --pm-indicator-color: var(--warn); }
+:host.pm-indicator--crit { --pm-indicator-color: var(--crit); }
+:host.pm-indicator--live { --pm-indicator-color: var(--live); }
+
+.pm-indicator__seg {
+
+  display: inline-block;
+  width: var(--pm-indicator-seg-w, var(--sp-4));
+  height: var(--pm-indicator-seg-h, var(--sp-1));
+  box-sizing: border-box;
+}
+
+.pm-indicator__seg--on {
+
+  background: var(--pm-indicator-color);
+  border: 0;
+}
+
+.pm-indicator__seg--off {
+
+  background: transparent;
+  border: var(--bw-hair) solid var(--pm-indicator-color);
+}

@@ -19,11 +19,19 @@
   margin: 0;
 }
 
+// Constrain the AlarmStats demo to the reference column width (~475px)
+// so the Panel renders at the dimensions it will have inside the dashboard grid.
+.alarm-stats__frame {
+
+  width: 475px;
+  max-width: 100%;
+}
+
 .alarm-stats__cols {
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-4);
+  gap: var(--sp-3);
   width: 100%;
   text-align: center;
 }
@@ -32,8 +40,8 @@
 
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--sp-4);
-  padding-top: var(--sp-3);
+  gap: var(--sp-3);
+  padding-top: var(--sp-2);
 }
 
 .variants,

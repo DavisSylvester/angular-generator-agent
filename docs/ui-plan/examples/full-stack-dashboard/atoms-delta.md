@@ -43,12 +43,20 @@ Status legend: `proposed` · `accepted` · `rejected` · `deferred`.
 - **Rationale:** distinct from `Chip` (which is inline alongside data). Tag is a section label.
 - **Notes:** may collapse into `Chip` with a `tone="section"` variant.
 
-## AccentRule — `proposed`
+## AccentRule — `accepted`
 
 - **Purpose:** full-width 2px accent bar under a Panel footer or nav group.
-- **Inputs:** `color?: PanelStatus`
-- **Rationale:** recurring motif; currently achieved via an ad-hoc `<div>` in mockups.
-- **Notes:** accept if it also handles the gradient variant seen under the AppHeader.
+- **Inputs:** `color?: PanelStatus`, `variant?: 'solid' | 'gradient'`
+- **Rationale:** recurring motif for nav underlines and the AppHeader gradient.
+- **Notes:** accepted — but NOT valid for the AlarmStats sub-Panel footers, which are segmented indicators (see `ActivityIndicator`). See KB §1.
+
+## ActivityIndicator — `accepted`
+
+- **Purpose:** N-segment horizontal tick group; first M segments filled, remaining (N−M) outlined. Conveys a fractional or binary-coded state.
+- **Inputs:** `total: number` (default 4), `active: number`, `status: PanelStatus`, `segmentWidth?` (default `var(--sp-3)`), `segmentGap?` (default `var(--sp-1)`).
+- **DOM sketch:** `<div class="pm-indicator"><span class="pm-indicator__seg pm-indicator__seg--on"></span>...<span class="pm-indicator__seg pm-indicator__seg--off"></span>...</div>`
+- **Rationale:** required by the AlarmStats sub-Panel footers in the reference. See KB §1.
+- **Notes:** promote into pattern catalogue at `01-panel-interface.md` §6.
 
 ---
 

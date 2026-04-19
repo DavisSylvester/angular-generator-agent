@@ -257,14 +257,14 @@ Format for each Panel:
   Header  : · ColumnHeaders ("ONLINE" · "ALARMS" · "SLA")
   Body    : · 3-col grid:
               ↳ ■ Online     variant=borderless
-                  Body   : ★ Stat value=102 denominator=109 label="ACTIVE / ALL" status=ok
-                  Footer : · AccentRule (teal)
+                  Body   : ★ Stat value=102 denominator=109 labelLeft="ACTIVE" labelRight="ALL" status=ok
+                           ★ ActivityIndicator total=4 active=2 status=ok
               ↳ ■ Alarms     variant=borderless
-                  Body   : ★ Stat value=14 denominator=23 label="12H / 24H" status=warn
-                  Footer : · AccentRule (amber)
+                  Body   : ★ Stat value=14 denominator=23 labelLeft="12H" labelRight="24H" status=warn
+                           ★ ActivityIndicator total=4 active=2 status=warn
               ↳ ■ Sla        variant=borderless
-                  Body   : ★ Stat value=99.4 denominator=100 label="UPTIME / —" status=ok
-                  Footer : · AccentRule (teal)
+                  Body   : ★ Stat value=99.4 denominator=100 labelLeft="UPTIME" labelRight="—" status=ok
+                           ★ ActivityIndicator total=4 active=2 status=ok
   Footer  : (none — child Panels render their own accent bars)
   Status  : idle
 
@@ -283,18 +283,25 @@ Format for each Panel:
               value       = 102
               denominator = 109
               unit        = (none)
-              label       = "ACTIVE / ALL"
+              labelLeft   = "ACTIVE"
+              labelRight  = "ALL"
               status      = ok
-  Footer  : · AccentRule color=ok
+            ★ ActivityIndicator total=4 active=2 status=ok
+  Footer  : (none)
   Status  : ok
 
 ■ Alarms                                     status=warn  variant=borderless
-  Body    : ★ Stat value=14 denominator=23 label="12H / 24H" status=warn
-  Footer  : · AccentRule color=warn
+  Body    : ★ Stat value=14 denominator=23 labelLeft="12H" labelRight="24H" status=warn
+            ★ ActivityIndicator total=4 active=2 status=warn
 
 ■ Sla                                        status=ok  variant=borderless
-  Body    : ★ Stat value=99.4 denominator=100 label="UPTIME / —" status=ok
-  Footer  : · AccentRule color=ok
+  Body    : ★ Stat value=99.4 denominator=100 labelLeft="UPTIME" labelRight="—" status=ok
+            ★ ActivityIndicator total=4 active=2 status=ok
+
+> KB — see docs/knowledge-bases/panel-model-fidelity-corrections.md §1:
+> `AccentRule` was the wrong atom for these footers; the reference shows a
+> 4-segment `ActivityIndicator` (2 filled + 2 outlined), not a single bar.
+> Label is a two-part left/right pair, not a centered single string.
 ```
 
 ---

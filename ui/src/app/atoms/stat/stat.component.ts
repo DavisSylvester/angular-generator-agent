@@ -1,3 +1,7 @@
+// KB §1 — docs/knowledge-bases/panel-model-fidelity-corrections.md
+// Stat supports a two-part left/right label pair aligned under the numeral
+// and denominator. Do NOT re-introduce a single centered `label` as the sole
+// labelling mechanism for ratio stats.
 import { ChangeDetectionStrategy, Component, computed, HostBinding, input } from '@angular/core';
 import type { PanelStatus } from '../../panel/types';
 
@@ -14,6 +18,8 @@ export class StatComponent {
   public readonly denominator = input<number | undefined>(undefined);
   public readonly unit = input<string | undefined>(undefined);
   public readonly label = input<string | undefined>(undefined);
+  public readonly labelLeft = input<string | undefined>(undefined);
+  public readonly labelRight = input<string | undefined>(undefined);
   public readonly status = input<PanelStatus>(`idle`);
 
   @HostBinding(`class`)
@@ -27,18 +33,16 @@ export class StatComponent {
 
     const unit = this.unit() ? ` ${this.unit()}` : ``;
     const denom = this.denominator() !== undefined ? ` of ${this.denominator()}` : ``;
-    const label = this.label() ? ` (${this.label()})` : ``;
-    return `${this.value()}${unit}${denom}${label}`;
+    const left = this.labelLeft() ? ` (${this.labelLeft()})` : ``;
+    const right = this.labelRight() ? ` / ${this.labelRight()}` : ``;
+    const single = this.label() ? ` (${this.label()})` : ``;
+    return `${this.value()}${unit}${denom}${left}${right}${single}`;
   }
 
-  public readonly formattedValue = computed<string>(() => this.formatNumber(this.value()));
+  public readonly formattedValue = computed<string>(() => String(this.value()));
   public readonly formattedDenominator = computed<string | null>(() => {
     const d = this.denominator();
-    return d === undefined ? null : this.formatNumber(d);
+    return d === undefined ? null : String(d);
   });
-
-  private formatNumber(n: number): string {
-
-    return Number.isInteger(n) ? n.toString() : n.toString();
-  }
+  public readonly hasSplitLabel = computed<boolean>(() => Boolean(this.labelLeft() ?? this.labelRight()));
 }

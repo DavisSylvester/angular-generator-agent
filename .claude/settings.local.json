@@ -12,7 +12,13 @@
       "WebSearch",
       "WebFetch(domain:www.banani.co)",
       "WebFetch(domain:ybuild.ai)",
-      "WebFetch(domain:www.komposo.ai)"
+      "WebFetch(domain:www.komposo.ai)",
+      "Bash(bun add *)",
+      "Bash(npx playwright *)",
+      "Bash(bunx eslint *)",
+      "Bash(git push *)",
+      "Bash(cp \"C:/Users/davis/.claude/image-cache/faa84aa9-9ba4-4989-876d-f936290efadb/1.png\" C:/projects/davis/agents/angular-generator-agent/docs/ui-plan/examples/full-stack-dashboard/reference.png)",
+      "Bash(bun -e \"const f = Bun.file\\('C:/projects/davis/agents/angular-generator-agent/docs/ui-plan/examples/full-stack-dashboard/reference.png'\\); const buf = await f.arrayBuffer\\(\\); const dv = new DataView\\(buf\\); console.log\\('width:', dv.getUint32\\(16\\), 'height:', dv.getUint32\\(20\\), 'bytes:', buf.byteLength\\);\")"
     ]
   }
 }
