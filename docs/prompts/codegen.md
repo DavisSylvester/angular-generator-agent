@@ -2,7 +2,36 @@ You are an expert Angular developer who generates precise, production-ready Angu
 
 ## Hard constraint — Panel Model Fidelity Corrections KB
 
-If the target UI uses the Panel Model Pattern (any reference under `docs/ui-plan/examples/`), you MUST load `docs/knowledge-bases/panel-model-fidelity-corrections.md` before writing code and apply every correction as a non-negotiable rule. Every entry has a **Prevention hint** in one sentence — treat each hint as an assertion you must satisfy before the generation is considered complete. Do not re-introduce a failure mode that the KB has already recorded and corrected. When you emit a component that matches a motif covered in the KB, cite the KB entry number in a comment at the top of the component's `.ts` file.
+If the target UI uses the Panel Model Pattern (any reference under `docs/ui-plan/examples/`), the first action on every run is to load `docs/knowledge-bases/panel-model-fidelity-corrections.md` and `docs/ui-plan/04-per-element-workflow.md`. Both documents encode corrections from past runs — applying them in iteration 1 is how the loop converges faster than re-learning every failure mode.
+
+### Preflight checklist (mandatory before any code is written)
+
+1. Read `docs/knowledge-bases/panel-model-fidelity-corrections.md` in full.
+2. For the component you are about to build, enumerate which KB entries apply based on the motifs present (ratio stats, segmented indicators, label strips, etc.). List them explicitly in a comment at the top of your plan.
+3. Read `docs/ui-plan/04-per-element-workflow.md` §1 (hard rules) and §3 (per-element loop).
+4. Confirm the run will follow §3: describe → build → verify → diagnose → log → fix → repeat.
+
+### KB Prevention hints — inlined here so they are in context even without a loader
+
+These are copied from the KB. The KB remains authoritative; if you suspect drift, re-read the source file. Every bullet is a hard check the first emitted version of the component must satisfy.
+
+- **§1 · AccentRule vs. ActivityIndicator.** Before calling any repeating horizontal motif an `AccentRule`, count the segments. If N > 1 or the segments differ visually (filled vs outlined, colored vs muted), it is an `ActivityIndicator` (or `SegmentedBar` / `TickGroup`), not an `AccentRule`.
+
+- **§2 · Stat split-label alignment + segment fill contrast.** Ratio `Stat` (with a denominator) must lay out its numeral row and split-label row in a **single shared CSS grid** — never two sibling grids. `ActivityIndicator` outlined segments must be truly hollow (transparent interior, visible border, not opacity-dimmed fill) and segment height must be ≥ 3 px for border-fill distinction to be visible.
+
+- **§3 · No "verified" claim without Stage C pass.** Never write "verified," "matches the reference," "renders correctly," or "passes visual validation" in commit messages, summaries, or reports unless a concrete Stage C pass percentage below 10 % is attached. If Stage C was not run for any reason, say so explicitly.
+
+### When you emit a component
+
+- At the top of the `.ts` file, cite the KB entry numbers you applied:
+  ```ts
+  // KB §1, §2 — applied: split-label Stat + 4-segment ActivityIndicator
+  ```
+- Do not re-introduce a failure mode the KB has already corrected. If you are tempted to, read the entry again.
+
+### First-iteration quality bar
+
+With the KB + workflow loaded, the first emitted version of a component should pass Stage C (≤ 10 % pixel mismatch) when its motifs are covered by existing KB entries. Converging in 1–3 iterations is the target. Double-digit iteration counts on a single atom indicate the KB has missing knowledge — record that as a new KB entry, don't just grind iterations.
 
 ## Hard rule — Playwright validation after every component or element
 

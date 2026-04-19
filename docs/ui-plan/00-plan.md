@@ -393,6 +393,8 @@ Current `src/prompts/*.mts` files hold prompts as template literals. These are o
 
 ## 9. Visual Validation
 
+**The universal workflow is [`04-per-element-workflow.md`](04-per-element-workflow.md).** Every page, every feature Panel, every atom goes through it — no exceptions. The workflow includes first-run KB preflight so an LLM with the KB loaded can converge in 1–3 iterations on motifs already covered.
+
 **Hard rule (process):** after every component or element is created or modified, the full Stage A + Stage B + Stage C validation must run via `bun run scripts/verify.mts <example-id>`. Eyeballing a captured PNG is **not** validation. Stage C must produce a pass row in the report before the work is called done. See KB §3 — `docs/knowledge-bases/panel-model-fidelity-corrections.md`.
 
 **Hard rule (output):** no component is marked complete until its rendered output matches the per-section "before picture" cropped from the reference design, within a strict tolerance on color, typography, spacing, borders, corner ticks, and iconography.
