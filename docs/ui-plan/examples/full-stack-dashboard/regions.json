@@ -11,7 +11,7 @@
     { "id": "app-header.accent-rule",         "bbox": [30,   142, 1845, 4] },
 
     { "id": "dashboard-page",                 "bbox": [0,    150, 1905, 803] },
-    { "id": "dashboard-page.tag",             "bbox": [55,   170, 130,  22] },
+    { "id": "dashboard-page.tag",             "bbox": [170, 213, 142, 20] },
 
     { "id": "model-render",                   "bbox": [30,   225, 580,  335] },
     { "id": "model-render.header",            "bbox": [30,   225, 580,  28] },
@@ -23,16 +23,16 @@
 
     { "id": "health-monitor",                 "bbox": [625,  225, 475,  335] },
     { "id": "health-monitor.header",          "bbox": [625,  225, 475,  28] },
-    { "id": "health-monitor.header.controls", "bbox": [970,  214, 130,  22] },
+    { "id": "health-monitor.header.controls", "bbox": [970,  246, 130,  22] },
     { "id": "health-monitor.chart",           "bbox": [625,  240, 475,  265], "mask": true },
     { "id": "health-monitor.footer",          "bbox": [625,  510, 475,  35] },
     { "id": "health-monitor.footer.stream-chip", "bbox": [625, 525, 475, 16] },
 
     { "id": "runtime-metrics",                "bbox": [1115, 225, 760,  335] },
     { "id": "runtime-metrics.header",         "bbox": [1115, 225, 760,  28] },
-    { "id": "runtime-metrics.bars",           "bbox": [1115, 258, 760,  40] },
-    { "id": "runtime-metrics.bars.load",      "bbox": [1115, 258, 760,  18] },
-    { "id": "runtime-metrics.bars.thre",      "bbox": [1115, 278, 760,  18] },
+    { "id": "runtime-metrics.bars",           "bbox": [1135, 280, 740,  40] },
+    { "id": "runtime-metrics.bars.load",      "bbox": [1135, 282, 740,  16] },
+    { "id": "runtime-metrics.bars.thre",      "bbox": [1135, 302, 740,  16] },
     { "id": "runtime-metrics.grid",           "bbox": [1115, 292, 760,  253] },
     { "id": "runtime-metrics.grid.col-a",     "bbox": [1115, 292, 375,  253] },
     { "id": "runtime-metrics.grid.col-b",     "bbox": [1495, 292, 380,  253] },

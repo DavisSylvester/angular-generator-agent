@@ -10,10 +10,10 @@
       ],
       "actualSize": [
         1905,
-        909
+        910
       ],
-      "mismatchedPixels": 75309,
-      "mismatchRatio": 0.041481934380447984,
+      "mismatchedPixels": 63109,
+      "mismatchRatio": 0.034761892958553316,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -27,8 +27,8 @@
         1905,
         140
       ],
-      "mismatchedPixels": 2380,
-      "mismatchRatio": 0.008328958880139983,
+      "mismatchedPixels": 2093,
+      "mismatchRatio": 0.007324584426946632,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -42,8 +42,8 @@
         788,
         41
       ],
-      "mismatchedPixels": 973,
-      "mismatchRatio": 0.02574074074074074,
+      "mismatchedPixels": 942,
+      "mismatchRatio": 0.02492063492063492,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -57,8 +57,8 @@
         267,
         31
       ],
-      "mismatchedPixels": 665,
-      "mismatchRatio": 0.028,
+      "mismatchedPixels": 627,
+      "mismatchRatio": 0.0264,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -72,8 +72,8 @@
         1841,
         2
       ],
-      "mismatchedPixels": 492,
-      "mismatchRatio": 0.06666666666666667,
+      "mismatchedPixels": 294,
+      "mismatchRatio": 0.03983739837398374,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -85,25 +85,25 @@
       ],
       "actualSize": [
         1905,
-        769
+        770
       ],
-      "mismatchedPixels": 71917,
-      "mismatchRatio": 0.047013332548873486,
+      "mismatchedPixels": 61696,
+      "mismatchRatio": 0.040331695773395695,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
       "id": "dashboard-page.tag",
       "baselineSize": [
-        130,
-        22
+        142,
+        20
       ],
       "actualSize": [
-        111,
-        17
+        133,
+        19
       ],
-      "mismatchedPixels": 2319,
-      "mismatchRatio": 0.8108391608391609,
+      "mismatchedPixels": 804,
+      "mismatchRatio": 0.2830985915492958,
       "pass": false,
       "reason": "size-mismatch-resized"
     },
@@ -117,8 +117,8 @@
         580,
         396
       ],
-      "mismatchedPixels": 8244,
-      "mismatchRatio": 0.04242923314462172,
+      "mismatchedPixels": 7404,
+      "mismatchRatio": 0.038106021616057646,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -132,8 +132,8 @@
         280,
         286
       ],
-      "mismatchedPixels": 3479,
-      "mismatchRatio": 0.022635003253090435,
+      "mismatchedPixels": 2849,
+      "mismatchRatio": 0.018536109303838647,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -147,8 +147,8 @@
         138,
         67
       ],
-      "mismatchedPixels": 630,
-      "mismatchRatio": 0.05874125874125874,
+      "mismatchedPixels": 549,
+      "mismatchRatio": 0.05118881118881119,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -162,8 +162,8 @@
         193,
         48
       ],
-      "mismatchedPixels": 1011,
-      "mismatchRatio": 0.08966740576496673,
+      "mismatchedPixels": 927,
+      "mismatchRatio": 0.08221729490022173,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -177,8 +177,8 @@
         475,
         270
       ],
-      "mismatchedPixels": 3793,
-      "mismatchRatio": 0.023836606441476827,
+      "mismatchedPixels": 3481,
+      "mismatchRatio": 0.021875883739198743,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -192,9 +192,9 @@
         75,
         15
       ],
-      "mismatchedPixels": 335,
-      "mismatchRatio": 0.11713286713286714,
-      "pass": false,
+      "mismatchedPixels": 173,
+      "mismatchRatio": 0.06048951048951049,
+      "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
@@ -207,8 +207,8 @@
         473,
         225
       ],
-      "mismatchedPixels": 1793,
-      "mismatchRatio": 0.01424428997020854,
+      "mismatchedPixels": 1596,
+      "mismatchRatio": 0.012679245283018867,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -222,54 +222,54 @@
         760,
         312
       ],
-      "mismatchedPixels": 12061,
-      "mismatchRatio": 0.04737234878240377,
+      "mismatchedPixels": 9586,
+      "mismatchRatio": 0.03765121759622938,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
       "id": "runtime-metrics.bars",
       "baselineSize": [
-        760,
+        740,
         40
       ],
       "actualSize": [
         758,
         43
       ],
-      "mismatchedPixels": 4570,
-      "mismatchRatio": 0.15032894736842106,
+      "mismatchedPixels": 3343,
+      "mismatchRatio": 0.11293918918918919,
       "pass": false,
       "reason": "size-mismatch-resized"
     },
     {
       "id": "runtime-metrics.bars.load",
       "baselineSize": [
-        760,
-        18
+        740,
+        16
       ],
       "actualSize": [
         758,
         16
       ],
-      "mismatchedPixels": 2785,
-      "mismatchRatio": 0.20358187134502925,
+      "mismatchedPixels": 1488,
+      "mismatchRatio": 0.12567567567567567,
       "pass": false,
       "reason": "size-mismatch-resized"
     },
     {
       "id": "runtime-metrics.bars.thre",
       "baselineSize": [
-        760,
-        18
+        740,
+        16
       ],
       "actualSize": [
         758,
         15
       ],
-      "mismatchedPixels": 2597,
-      "mismatchRatio": 0.1898391812865497,
-      "pass": false,
+      "mismatchedPixels": 782,
+      "mismatchRatio": 0.0660472972972973,
+      "pass": true,
       "reason": "size-mismatch-resized"
     },
     {
@@ -282,8 +282,8 @@
         758,
         217
       ],
-      "mismatchedPixels": 8051,
-      "mismatchRatio": 0.04187122945704182,
+      "mismatchedPixels": 6182,
+      "mismatchRatio": 0.03215102974828375,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -297,8 +297,8 @@
         371,
         217
       ],
-      "mismatchedPixels": 4795,
-      "mismatchRatio": 0.05054018445322793,
+      "mismatchedPixels": 3661,
+      "mismatchRatio": 0.03858761528326746,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -312,8 +312,8 @@
         371,
         217
       ],
-      "mismatchedPixels": 3179,
-      "mismatchRatio": 0.03306636155606407,
+      "mismatchedPixels": 2467,
+      "mismatchRatio": 0.025660495111296026,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -327,8 +327,8 @@
         580,
         514
       ],
-      "mismatchedPixels": 10023,
-      "mismatchRatio": 0.048271046041225195,
+      "mismatchedPixels": 9571,
+      "mismatchRatio": 0.04609420150260066,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -342,8 +342,8 @@
         578,
         29
       ],
-      "mismatchedPixels": 938,
-      "mismatchRatio": 0.07351097178683386,
+      "mismatchedPixels": 839,
+      "mismatchRatio": 0.06575235109717868,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -357,8 +357,8 @@
         578,
         121
       ],
-      "mismatchedPixels": 1243,
-      "mismatchRatio": 0.027475685234305925,
+      "mismatchedPixels": 1146,
+      "mismatchRatio": 0.0253315649867374,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -372,8 +372,8 @@
         188,
         105
       ],
-      "mismatchedPixels": 369,
-      "mismatchRatio": 0.024898785425101214,
+      "mismatchedPixels": 330,
+      "mismatchRatio": 0.022267206477732792,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -387,8 +387,8 @@
         188,
         105
       ],
-      "mismatchedPixels": 398,
-      "mismatchRatio": 0.026855600539811068,
+      "mismatchedPixels": 365,
+      "mismatchRatio": 0.024628879892037787,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -402,8 +402,8 @@
         188,
         105
       ],
-      "mismatchedPixels": 599,
-      "mismatchRatio": 0.03918105703819989,
+      "mismatchedPixels": 551,
+      "mismatchRatio": 0.03604133961276818,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -417,8 +417,8 @@
         578,
         278
       ],
-      "mismatchedPixels": 5535,
-      "mismatchRatio": 0.0545320197044335,
+      "mismatchedPixels": 5346,
+      "mismatchRatio": 0.052669950738916255,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -432,8 +432,8 @@
         578,
         19
       ],
-      "mismatchedPixels": 187,
-      "mismatchRatio": 0.009211822660098522,
+      "mismatchedPixels": 181,
+      "mismatchRatio": 0.008916256157635468,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -447,8 +447,8 @@
         475,
         137
       ],
-      "mismatchedPixels": 3855,
-      "mismatchRatio": 0.06763157894736842,
+      "mismatchedPixels": 3390,
+      "mismatchRatio": 0.05947368421052632,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -462,8 +462,8 @@
         158,
         92
       ],
-      "mismatchedPixels": 1242,
-      "mismatchRatio": 0.08544303797468354,
+      "mismatchedPixels": 1073,
+      "mismatchRatio": 0.07381673087506879,
       "pass": true,
       "reason": "identical-size"
     },
@@ -477,8 +477,8 @@
         159,
         92
       ],
-      "mismatchedPixels": 1003,
-      "mismatchRatio": 0.06900110071546506,
+      "mismatchedPixels": 865,
+      "mismatchRatio": 0.0595074298293891,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -492,8 +492,8 @@
         158,
         92
       ],
-      "mismatchedPixels": 1193,
-      "mismatchRatio": 0.08155592015313098,
+      "mismatchedPixels": 1006,
+      "mismatchRatio": 0.06877221766475253,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -507,8 +507,8 @@
         760,
         419
       ],
-      "mismatchedPixels": 17286,
-      "mismatchRatio": 0.06353278447515437,
+      "mismatchedPixels": 12593,
+      "mismatchRatio": 0.046284181123199056,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -522,8 +522,8 @@
         758,
         118
       ],
-      "mismatchedPixels": 7146,
-      "mismatchRatio": 0.08547846889952153,
+      "mismatchedPixels": 4954,
+      "mismatchRatio": 0.05925837320574163,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -537,8 +537,8 @@
         758,
         133
       ],
-      "mismatchedPixels": 6031,
-      "mismatchRatio": 0.07935526315789473,
+      "mismatchedPixels": 4536,
+      "mismatchRatio": 0.05968421052631579,
       "pass": true,
       "reason": "size-mismatch-resized"
     },
@@ -552,8 +552,8 @@
         758,
         101
       ],
-      "mismatchedPixels": 1939,
-      "mismatchRatio": 0.025513157894736842,
+      "mismatchedPixels": 1451,
+      "mismatchRatio": 0.019092105263157896,
       "pass": true,
       "reason": "size-mismatch-resized"
     }

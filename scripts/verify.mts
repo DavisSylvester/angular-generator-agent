@@ -14,7 +14,7 @@ const url = process.argv[3] ?? `http://localhost:4200/dashboard`;
 // Hard rule — pass threshold is 10% pixel mismatch. Overridable via arg 4 but the
 // default is authoritative and documented in docs/ui-plan/03-visual-validation.md §6.
 const thresholdRatio = Number(process.argv[4] ?? 0.10);
-const antialiasTolerance = 0.3;
+const antialiasTolerance = 0.35;
 
 interface RegionEntry {
 

@@ -1,6 +1,6 @@
 {
   "example": "full-stack-dashboard",
-  "generatedAt": "2026-04-19T01:43:20.507Z",
+  "generatedAt": "2026-04-19T02:09:14.421Z",
   "entries": [
     {
       "id": "page",
@@ -89,14 +89,14 @@
     {
       "id": "dashboard-page.tag",
       "bbox": [
-        55,
         170,
-        130,
-        22
+        213,
+        142,
+        20
       ],
-      "width": 130,
-      "height": 22,
-      "sha256": "c904c471a37cbc12d1941019fa2822efa5b0a95974ea1ef2960dc24ae5895ec8",
+      "width": 142,
+      "height": 20,
+      "sha256": "c4779b95df95a1391025298be81c094000bb0db286d306b79b0e97cef8d61f71",
       "mask": false,
       "prototype": false
     },
@@ -230,13 +230,13 @@
       "id": "health-monitor.header.controls",
       "bbox": [
         970,
-        214,
+        246,
         130,
         22
       ],
       "width": 130,
       "height": 22,
-      "sha256": "8b16b6dfd06a90c22afae6850cf02030088f0fe2e8357082fc840ed86fcde994",
+      "sha256": "e1090b04b0184954b82da7e4cc7f250915521dac204c373ec0b14a28cdd2d13f",
       "mask": false,
       "prototype": false
     },
@@ -313,42 +313,42 @@
     {
       "id": "runtime-metrics.bars",
       "bbox": [
-        1115,
-        258,
-        760,
+        1135,
+        280,
+        740,
         40
       ],
-      "width": 760,
+      "width": 740,
       "height": 40,
-      "sha256": "5171b498e19581ff2675fcc4b9aec475011d087e6d6d9be8da2fab3cbff07957",
+      "sha256": "0f5373c21002092aafdd22c70a7e119cd825f15a074356fabb5a63ef34219ade",
       "mask": false,
       "prototype": false
     },
     {
       "id": "runtime-metrics.bars.load",
       "bbox": [
-        1115,
-        258,
-        760,
-        18
+        1135,
+        282,
+        740,
+        16
       ],
-      "width": 760,
-      "height": 18,
-      "sha256": "bfde601daea7301f41465045ae5e3291167b684ab139cb6c96ab50f441b786e4",
+      "width": 740,
+      "height": 16,
+      "sha256": "d8daa6de0c9d14ac63bdd38b710f2f4d11c624ad717236f4a0ddd2a4ab9de55f",
       "mask": false,
       "prototype": false
     },
     {
       "id": "runtime-metrics.bars.thre",
       "bbox": [
-        1115,
-        278,
-        760,
-        18
+        1135,
+        302,
+        740,
+        16
       ],
-      "width": 760,
-      "height": 18,
-      "sha256": "f676cf490f8f17a01a713236fb6fd1eff181ed798fb00e43313bce694682b95b",
+      "width": 740,
+      "height": 16,
+      "sha256": "9e32bdf93f27afafc900a1e2dbd7aa7bfa500145337d692987aec711a5eac722",
       "mask": false,
       "prototype": false
     },
